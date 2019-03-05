@@ -127,3 +127,14 @@ unlist(lapply(smdt[ ,2:4], FUN = mean))
 sapply(smdt[ ,2:4], FUN = mean, simplify = T)
 vapply(smdt[ ,2:4], FUN = mean, FUN.VALUE = '')
 
+
+# reshape2 - melt, dcast ####
+library('reshape2')
+
+dfsum = cbind( data.frame(no=1:4, year=2016:2019), 
+               matrix(round(runif(16), 3) * 1000, ncol=4, dimnames = list(NULL, paste0('Q', 1:4))) )
+
+melt(data = dfsum[, 2:6], id.vars = "year")
+meltsum = melt(dfsum[ ,2:6], id.vars = "year", variable.name = "Sales")               
+
+dcast(meltsum, Sales~year, value.var = "value")
