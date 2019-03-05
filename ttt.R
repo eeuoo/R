@@ -226,4 +226,29 @@ data$학점 = ifelse(data$평균 >= 90, 'A', ifelse(data$평균 >= 80, 'B', ifel
 
 table(data$학점)
 
-                                  
+data()
+dr = data()$result
+colnames(dr)       # dim(dr),   head(dr)
+dr$item
+
+data("AirPassengers")
+AirPassengers
+str(AirPassengers)
+head(AirPassengers)
+
+data('trees')
+trees
+class(trees)
+head(trees)
+
+letters
+LETTERS
+month.name
+month.abb
+pi
+# 초기화
+letters = c('AA', 'BB', 'CC')
+letters
+rm(letters)
+letters
+ls(pattern = 'm')
