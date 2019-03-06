@@ -5,7 +5,7 @@ data$c1 = sample(rep(LETTERS[1:3], times=3, length.out=nrow(data)), size=nrow(da
 cat(nrow(data), nrow(data[data$c1 == "C",]))
 cat(nrow(data), nrow(data[data$c1 == "B",]))
 cat(nrow(data), nrow(data[data$c1 == "A",]))
-data$c1
+table(data$c1)
 
 #2 fibonacci.R 파일을 작성하고 console에서 실행하시오.
 source('fibonacci.R')
