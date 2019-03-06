@@ -21,7 +21,6 @@ while(TRUE) {
         p = p1 + p2
         
         lst[i+1] = p1
-        print(paste("i",i,"p1",p1,"p2",p2,"p",p))
      }
     }
     print(lst)
