@@ -16,9 +16,9 @@ smdt
 smdtmean = round(apply(smdt[, 2:4], MARGIN = 2, FUN = mean))
 smdtmean
 smdt = rbind(smdt, c(6, smdtmean))
-smdt$total = round(apply(smdt1[, 2:4], MARGIN = 1, FUN = sum))
-smdt$avg = round(apply(smdt1[, 2:4], MARGIN = 1, FUN = mean))
-smdt[smdt1$stuno == 6 ,]$stuno = "계"
+smdt$total = round(apply(smdt[, 2:4], MARGIN = 1, FUN = sum))
+smdt$avg = round(apply(smdt[, 2:4], MARGIN = 1, FUN = mean))
+smdt[smdt$stuno == 6 ,]$stuno = "계"
 smdt
 
 
