@@ -15,11 +15,11 @@ source('fibonacci.R')
 smdt
 smdtmean = round(apply(smdt[, 2:4], MARGIN = 2, FUN = mean))
 smdtmean
-smdt1 = rbind(smdt, c(6, smdtmean))
-smdt1$total = round(apply(smdt1[, 2:4], MARGIN = 1, FUN = sum))
-smdt1$avg = round(apply(smdt1[, 2:4], MARGIN = 1, FUN = mean))
-smdt1[smdt1$stuno == 6 ,]$stuno = "계"
-smdt1
+smdt = rbind(smdt, c(6, smdtmean))
+smdt$total = round(apply(smdt1[, 2:4], MARGIN = 1, FUN = sum))
+smdt$avg = round(apply(smdt1[, 2:4], MARGIN = 1, FUN = mean))
+smdt[smdt1$stuno == 6 ,]$stuno = "계"
+smdt
 
 
 #4 2016~2019년 연도별 1월(Jan) ~ 12월(Dec) 매출액 데이터 `no year Jan Feb … Dec` 형태로 만든 다음, 아래와 같이 출력하시오.
