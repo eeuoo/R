@@ -1,5 +1,8 @@
 # order, sort ####
 t = c(5, 7, 2, 8, 20, 11, 19)
+
+order(t)
+rev(t) 
 t[order(t)]
 t[order(t, decreasing = T)]
 
