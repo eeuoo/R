@@ -1,4 +1,5 @@
 library('ggplot2')
+library('dplyr')
 smdt = data.frame(stuno = 1:5,
                   Korean = sample(60:100, 5),
                   English = sample((5:10)*10,5),
@@ -107,8 +108,9 @@ d = data %>% filter(kor > 90) %>% select('cls')
 
 table(d)
 
-pie(table(d), border = "darkblue")
+pie(table(d), radius = 0.8, border = "darkblue")
 pie(table(d), clockwise = T, col=c('red', 'purple', 'green', 'cyan'))
+
 
 
 
