@@ -17,10 +17,21 @@ ggplot(d2, aes(displ)) +
 
 d2
 
-ggplot(d2, aes(displ)) +
-  geom_line(aes(y=cty, color = factor(year)))+
-  geom_line(aes(y=hwy, color = factor(year)))
-  
+ggplot(d2, aes(displ, group = year, color = factor(year))) +
+  geom_line(aes(y=cty)) +
+  geom_line(aes(y=hwy)) 
+
+ggplot() +
+  geom_line(data=d2 %>% filter(year == 2008), aes(displ, cty, color = '2008 cty'), size = 1) +
+  geom_line(data=d2 %>% filter(year == 2008), aes(displ, hwy, color = '2008 hwy'), size = 1) +
+  geom_line(data=d2 %>% filter(year == 1999), aes(displ, cty, color = '1999 cty')) +
+  geom_line(data=d2 %>% filter(year == 1999), aes(displ, hwy, color = '1999 hwy')) +
+  xlab('배기량') +
+  labs(colour = "")+
+  xlim(1, 7) +
+  scale_y_continuous("연비", limits = c(5, 45)) +
+  labs(title = '연도별 통합 연비', subtitle = '(굵은 선은 2008년)')
+
 
 
 
