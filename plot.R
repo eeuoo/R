@@ -113,5 +113,3 @@ pie(table(d), clockwise = T, col=c('red', 'purple', 'green', 'cyan'))
 
 
 
-
-
