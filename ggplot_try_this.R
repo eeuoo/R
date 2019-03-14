@@ -3,6 +3,9 @@ library('dplyr')
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
 head(data)
+
+save(data, file = 'data/data.rda')
+
 # 1. mpg데이터에서 연도별 배기량에 따른 통합연비를 꺾은선으로 그리시오. (단, 2008년은 굵은 선으로 표현하시오)
 
 d2 = mpg %>% group_by(year, displ) %>% 
@@ -25,8 +28,6 @@ ggplot() +
 
 
 # 2. data(성적.csv) 데이터에서 국어 성적이 80점 이상인 학생들의 수를 성비가 보이도록 학급별로 막대그래프를 그리시오.
-
-save(data, file = 'data/data.rda')
 
 ggplot(data %>% filter( kor >= 80) , aes(cls)) +
   geom_bar(aes(fill=gen), width = 0.5) +
