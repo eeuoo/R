@@ -216,6 +216,15 @@ levels(factor(d2$year)) </code></pre>
 <div id="data.csv----80--------." class="section level3">
 <h3>2. data(성적.csv) 데이터에서 국어 성적이 80점 이상인 학생들의 수를 성비가 보이도록 학급별로 막대그래프를 그리시오.</h3>
 <p><br></p>
+<p>* 참고 : data는 매, 난, 국, 죽 4개 반에 있는 학생들의 국어, 영어, 수학, 과학, 예체능 성적을 모아 놓은 데이터이다.</p>
+<pre class="r"><code>head(data)</code></pre>
+<pre><code>##   stuno cls gen kor eng math sci art group subTotal subMean
+## 1 10101  매  남  55  84   50  40  59     B      189      63
+## 2 10102  매  남  29  94   41  87  57     B      164      55
+## 3 10103  매  여  28  80   68  41 100     A      176      59
+## 4 10104  매  여  45  74   48  88  75     C      167      56
+## 5 10105  매  여  28  69   57  91  66     B      154      51
+## 6 10106  매  남  86  51   68  59  92     A      205      68</code></pre>
 <pre class="r"><code>ggplot(data %&gt;% filter( kor &gt;= 80) , aes(cls)) +
   geom_bar(aes(fill=gen), width = 0.5) +
   scale_fill_discrete(name = &quot;성별&quot;) +      
@@ -227,6 +236,15 @@ levels(factor(d2$year)) </code></pre>
 <div id="--95-----." class="section level3">
 <h3>3. 국어 성적이 95점 이상인 학생들의 점수별 밀도그래프를 그리시오.</h3>
 <p><br></p>
+<p>* 참고 : data는 매, 난, 국, 죽 4개 반에 있는 학생들의 국어, 영어, 수학, 과학, 예체능 성적을 모아 놓은 데이터이다.</p>
+<pre class="r"><code>head(data)</code></pre>
+<pre><code>##   stuno cls gen kor eng math sci art group subTotal subMean
+## 1 10101  매  남  55  84   50  40  59     B      189      63
+## 2 10102  매  남  29  94   41  87  57     B      164      55
+## 3 10103  매  여  28  80   68  41 100     A      176      59
+## 4 10104  매  여  45  74   48  88  75     C      167      56
+## 5 10105  매  여  28  69   57  91  66     B      154      51
+## 6 10106  매  남  86  51   68  59  92     A      205      68</code></pre>
 <pre class="r"><code>ggplot(data %&gt;% filter( kor &gt;= 95 ), aes(kor)) +
   geom_density(aes(fill=factor(cls)),size = 0.2, alpha = 0.5) +
   labs(x = '성적', y = '밀도', title = '반별 국어 우수 학생', subtitle = '(국어 점수 A+ 이상)', fill = '학급')</code></pre>

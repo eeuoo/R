@@ -49,8 +49,10 @@ ggplot() +
 ### 2. data(성적.csv) 데이터에서 국어 성적이 80점 이상인 학생들의 수를 성비가 보이도록 학급별로 막대그래프를 그리시오.
 
 <br>
-```{r data, include=TRUE}
 
+\* 참고 : data는 매, 난, 국, 죽 4개 반에 있는 학생들의 국어, 영어, 수학, 과학, 예체능 성적을 모아 놓은 데이터이다.
+```{r data, include=TRUE}
+head(data)
 ggplot(data %>% filter( kor >= 80) , aes(cls)) +
   geom_bar(aes(fill=gen), width = 0.5) +
   scale_fill_discrete(name = "성별") +      
@@ -66,7 +68,9 @@ ggplot(data %>% filter( kor >= 80) , aes(cls)) +
 
 <br>
 
+\* 참고 : data는 매, 난, 국, 죽 4개 반에 있는 학생들의 국어, 영어, 수학, 과학, 예체능 성적을 모아 놓은 데이터이다.
 ```{r include=TRUE}
+head(data)
 
 ggplot(data %>% filter( kor >= 95 ), aes(kor)) +
   geom_density(aes(fill=factor(cls)),size = 0.2, alpha = 0.5) +
