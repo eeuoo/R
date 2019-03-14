@@ -1,6 +1,10 @@
 ---
 title: "test"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
+  latex_engine : xelatex
+mainfont : MalgunGothic   #NanumGothic
 ---
 
 ```{r setup, include=FALSE}
@@ -26,3 +30,6 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
