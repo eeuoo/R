@@ -3,7 +3,7 @@ library('dplyr')
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
 
-# 1. mpg데이터에서 연도별 배기량에 따른 통합연비를 꺽은선으로 그리시오. (단, 2008년은 굵은 선으로 표현하시오)
+# 1. mpg데이터에서 연도별 배기량에 따른 통합연비를 꺾은선으로 그리시오. (단, 2008년은 굵은 선으로 표현하시오)
 
 d2 = mpg %>% group_by(year, displ) %>% 
   summarise(cty = mean(cty), hwy = mean(hwy))
