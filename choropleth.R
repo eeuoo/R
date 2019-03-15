@@ -1,3 +1,4 @@
+install.packages("stringi")
 
 # 단계 구분도 ######
 library(ggplot2)
@@ -77,3 +78,28 @@ ggplot(chodata, aes(data = Murder, map_id = state)) +
 
 ggiraph(code = print(gg_map))
 girafe(ggobj = gg_map)
+
+
+# 우리나라 ####
+install.packages('devtools')
+devtools::install_github("cardiomoon/kormaps2014")
+library(kormaps2014)
+
+kormaps2014::korpop1
+kdata = korpop1
+head(kdata)
+kdata = kdata %>% rename(pop = 총인구_명)
+kdata = kdata %>% rename(area = 행정구역별_읍면동)
+
+ggChoropleth(data=kdata,
+             aes(fill = pop, map_id = code, tooltip = area),
+             map = kormap1,
+             interactive = T)
+
+ggplot(kdata, aes(data = pop, map_id = code)) +
+  geom_map( aes(fill = pop), map = kormap1) + 
+  expand_limits(x = kormap1$long, y = kormap1$lat) +
+  scale_fill_gradient2('인구', low='darkblue') +
+  xlab('경도') + ylab('위도') + 
+  labs(title="시도별 인구")
+
