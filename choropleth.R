@@ -1,4 +1,6 @@
 install.packages("stringi")
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")
 
 # 단계 구분도 ######
 library(ggplot2)
@@ -102,4 +104,6 @@ ggplot(kdata, aes(data = pop, map_id = code)) +
   scale_fill_gradient2('인구', low='darkblue') +
   xlab('경도') + ylab('위도') + 
   labs(title="시도별 인구")
+
+
 
