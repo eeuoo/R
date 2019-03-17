@@ -105,5 +105,14 @@ ggplot(kdata, aes(data = pop, map_id = code)) +
   xlab('경도') + ylab('위도') + 
   labs(title="시도별 인구")
 
+lib_p = function() {
+  library(kormaps2014)
+  library(ggiraph)
+  library(ggplot2)
+  library(ggiraphExtra)
+  library(dplyr)
+}
+
+lib_p
 
 
