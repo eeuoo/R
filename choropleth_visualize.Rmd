@@ -106,11 +106,10 @@ head(tbc2)
 
 # tooltip 마우스 올렸을 때 나타낼 정보
 tooltips2 = paste0(
-  sprintf("<p><strong>%s</strong></p>", as.character(chodata$name)),
+  sprintf("<p><strong>%s</strong></p>", as.character(tbc2$name)),
   '<table>',
-  '    <th>결핵환자수</th>',
   '  <tr>',
-  sprintf('<td> %.0f 만</td>', tbc2$sum_newpts),
+  sprintf('<td>결핵환자수 : %.0f 만</td>', tbc2$sum_newpts),
   '  </tr>')
 
 # 작도

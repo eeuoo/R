@@ -51,11 +51,10 @@ tbc[is.na(tbc)] = 0
 str(tbc)
 
 tooltips2 = paste0(
-  sprintf("<p><strong>%s</strong></p>", as.character(chodata$name)),
+  sprintf("<p><strong>%s</strong></p>", as.character(tbc2$name)),
   '<table>',
   '  <tr>',
-  '    <td>결핵환자수</td>',
-  sprintf('<td>%.0f 만</td>', tbc2$sum_newpts),
+  sprintf('<td>결핵환자수 : %.0f 만</td>', tbc2$sum_newpts),
   '  </tr>')
 
 tbc$year =  as.character(tbc$year)
@@ -74,4 +73,5 @@ tbc_map = ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
 ggiraph(code = print(tbc_map))
 girafe(ggobj = tbc_map)
 
+tbc2$name
 
