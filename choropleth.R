@@ -2,6 +2,30 @@ install.packages("stringi")
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
 
+# persp #####
+x = 1:5 ; y = 1:3 ;
+z = outer(x,y, function(x,y) {x+y})
+
+x = seq(-10, 10, length = 30) 
+y = seq(-5, 5, length = 30)
+x = y
+
+f = function(x,y){
+  r = sqrt(x^2 + y^2)
+  return(10*sin(r)/r)
+}
+
+z = outer(x, y, f)
+
+persp(x, y, z, theta = 45, phi = 30, expand = 0.5, col='lightblue',
+      ltheta = 100, shade =1, ticktype = 'simple',
+      xlab = 'X', ylab = 'Y', zlab = 'Sinc(r)')
+
+# tibble #####
+library(tibble)
+chodata = rownames_to_column(USArrests, var = 'state')
+chodata$state = tolower(chodata$state)
+
 # 단계 구분도 ######
 library(ggplot2)
 ggiraphExtra::ggChoropleth()
@@ -89,9 +113,12 @@ library(kormaps2014)
 
 kormaps2014::korpop1
 kdata = korpop1
+# save(kdata, file = 'data/kdata.rda')
+
 head(kdata)
 kdata = kdata %>% rename(pop = 총인구_명)
 kdata = kdata %>% rename(area = 행정구역별_읍면동)
+
 
 ggChoropleth(data=kdata,
              aes(fill = pop, map_id = code, tooltip = area),
@@ -111,8 +138,12 @@ lib_p = function() {
   library(ggplot2)
   library(ggiraphExtra)
   library(dplyr)
+  theme_set(theme_gray(base_family="AppleGothic"))
+  par(family = "AppleGothic")
 }
 
-lib_p
+lib_p()
+
+
 
 
