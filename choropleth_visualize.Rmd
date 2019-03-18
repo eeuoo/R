@@ -20,21 +20,26 @@ par(family = "AppleGothic")
 ```
 
 ----
+
 ### 1. 다음과 같이 미국의 범죄율을 한번에 작도하시오.
 
 <br>
 
 ```{r echo=TRUE}
 
+# 지도에 그릴 데이터
 head(USArrests)
 
 chodata = rownames_to_column(USArrests, var = 'state')
 chodata$state = tolower(chodata$state)
 head(chodata)
 
+# 지도 데이터
 usmap = map_data('state')
 head(usmap)
 
+
+# 작도
 ggChoropleth(data=chodata, 
              aes(map_id=state),
              map = usmap,
@@ -45,11 +50,13 @@ ggChoropleth(data=chodata,
 ```
 
 ----
-### 2. 미국 범죄율의 Rape부분을 단계 구분도로 작성하시오. (단, 툴팁은 그림과 같이 표현하고,  클릭시 해당 state의 wikipedia 페이지를 보이도록 HTML로 저장하시오) http://en.wikipedia.org/wiki/<해당 state>
+
+### 2. 미국 범죄율의 Rape부분을 단계 구분도로 작성하시오. (단, 툴팁은 그림과 같이 표현하고,  클릭시 해당 state의 wikipedia 페이지를 보이도록 HTML로 저장하시오) "http://en.wikipedia.org/wiki/<해당 state>"
 
 <br>
 
 ```{r echo=TRUE}
+# tooltip 마우스 올렸을 때 나타낼 정보
 tooltips = paste0(
   sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
   '<table>',
@@ -67,6 +74,7 @@ tooltips = paste0(
   '  </tr>',
   '</table>' )
 
+# onclick 할 때 실행할 코드
 onclick = sprintf('window.open("http://en.wikipedia.org/wiki/%s")', as.character(chodata$state))
 
 ggplot(chodata, aes(map_id = state)) + 
@@ -78,8 +86,10 @@ ggplot(chodata, aes(map_id = state)) +
   labs(title="USA Rape", fill = 'Rape') + 
   scale_fill_gradient2('Rape', low='red', mid = 'green', high = 'blue') -> usa_rape
 
-
+# 작도 1
 ggiraph(code = print(usa_rape))
+
+# 작도 2
 girafe(ggobj = usa_rape)
 
 
@@ -93,16 +103,18 @@ girafe(ggobj = usa_rape)
 ```{r echo=TRUE}
 tbc = kormaps2014::tbc
 
-# 결측 처리
+# 결측 처리 NA = 0
 table(is.na(tbc))
 tbc[is.na(tbc)] = 0   
 str(tbc)
 
+# year 컬럼 형변환
 tbc$year =  as.character(tbc$year)
 
 tbc2 = tbc %>% filter( year >= '2006' & year <= '2015' ) %>% group_by(name, code) %>% summarise(sum_newpts = sum(NewPts))
 head(tbc2)
 
+# 작도
 ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
   geom_map( aes(fill = sum_newpts), map = kormap1) + 
   expand_limits(x = kormap1$long, y = kormap1$lat) +
