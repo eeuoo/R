@@ -62,7 +62,8 @@ tooltips = paste0(
   '<table>',
   '  <tr>',
   sprintf('<td>%.0f / %.0f 만</td> ', chodata$Rape, chodata$UrbanPop * 10),
-  '  </tr>' )
+  '  </tr>',
+  '</table>')
 
 # onclick 할 때 실행할 코드
 onclick = sprintf('window.open("http://en.wikipedia.org/wiki/%s")', as.character(chodata$state))
@@ -110,12 +111,16 @@ tooltips2 = paste0(
   '<table>',
   '  <tr>',
   sprintf('<td>결핵환자수 : %.0f 만</td>', tbc2$sum_newpts),
-  '  </tr>')
+  '  </tr>',
+  '</table>')
 
 # 작도
 tbc_map = ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
   geom_map_interactive( aes(fill = sum_newpts,
-                            tooltip = tooltips2), map = kormap1) + 
+                            tooltip = tooltips2), 
+                        map = kormap1,
+                        color = 'gray',
+                        size = 0.3) + 
   expand_limits(x = kormap1$long, y = kormap1$lat) +
   scale_fill_gradient2('인구', low='green', mid = 'lightyellow', high = 'red') +
   xlab('경도') + ylab('위도') + 

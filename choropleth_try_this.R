@@ -64,7 +64,7 @@ head(tbc2)
 
 tbc_map = ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
   geom_map_interactive( aes(fill = sum_newpts,
-                            tooltip = tooltips2), map = kormap1) + 
+                            tooltip = tooltips2), map = kormap1, color = 'gray', size = 0.3) + 
   expand_limits(x = kormap1$long, y = kormap1$lat) +
   scale_fill_gradient2('인구', low='green', mid = 'lightyellow', high = 'red') +
   xlab('경도') + ylab('위도') + 
