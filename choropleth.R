@@ -1,4 +1,4 @@
-install.packages("stringi")
+# install.packages("stringi")
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
 
@@ -29,10 +29,10 @@ chodata$state = tolower(chodata$state)
 # 단계 구분도 ######
 library(ggplot2)
 ggiraphExtra::ggChoropleth()
-install.packages("ggiraphExtra")
-install.packages("maps")
+# install.packages("ggiraphExtra")
+# install.packages("maps")
 library(ggiraphExtra)
-install.packages('mapproj')
+# install.packages('mapproj')
 
 head(USArrests)
 str(USArrests)
@@ -106,9 +106,23 @@ ggiraph(code = print(gg_map))
 girafe(ggobj = gg_map)
 
 
+# 필요한 패키지 및 데이터 #####
+lib_p = function() {
+  library(kormaps2014)
+  library(ggiraph)
+  library(ggplot2)
+  library(ggiraphExtra)
+  library(dplyr)
+  theme_set(theme_gray(base_family="AppleGothic"))
+  par(family = "AppleGothic")
+}
+
+lib_p()
+
+
 # 우리나라 ####
-install.packages('devtools')
-devtools::install_github("cardiomoon/kormaps2014")
+# install.packages('devtools')
+# devtools::install_github("cardiomoon/kormaps2014")
 library(kormaps2014)
 
 kormaps2014::korpop1
@@ -132,18 +146,54 @@ ggplot(kdata, aes(data = pop, map_id = code)) +
   xlab('경도') + ylab('위도') + 
   labs(title="시도별 인구")
 
-lib_p = function() {
-  library(kormaps2014)
-  library(ggiraph)
-  library(ggplot2)
-  library(ggiraphExtra)
-  library(dplyr)
-  theme_set(theme_gray(base_family="AppleGothic"))
-  par(family = "AppleGothic")
-}
 
-lib_p()
+head(kormap1$long)
+head(kormap1$lat)
+head(kormap1)
 
 
+# ploty #####
+# install.packages('plotly')
+library('plotly')
+
+ggplot(data, aes(eng,kor)) +
+  geom_point(aes(color = eng, size = kor), alpha = 0.3) -> t
+
+ggplotly(t)
 
 
+ggplot() +
+  geom_line(data=d2 %>% filter(year == 2008), aes(displ, cty, color = '2008 cty'), size = 1) +
+  geom_line(data=d2 %>% filter(year == 2008), aes(displ, hwy, color = '2008 hwy'), size = 1) +
+  geom_line(data=d2 %>% filter(year == 1999), aes(displ, cty, color = '1999 cty')) +
+  geom_line(data=d2 %>% filter(year == 1999), aes(displ, hwy, color = '1999 hwy')) +
+  xlab('배기량') +
+  labs(colour = "")+
+  xlim(1, 7) +
+  scale_y_continuous("연비", limits = c(5, 50)) +
+  labs(title = '연도별 통합 연비', subtitle = '(굵은 선은 2008년)') -> t
+
+ggplot(data %>% filter( kor >= 80) , aes(cls)) +
+  geom_bar(aes(fill=gen), width = 0.5) +
+  scale_fill_discrete(name = "성별") +      
+  labs(x = '학급', y = '학생수', title = '국어 우수 학생', subtitle = '(80점 이상)') -> t
+
+last_plot()
+
+# time series ####
+# install.packages('dygraphs')
+library(dygraphs)
+library(xts)
+
+head(economics)
+ue = xts(economics$unemploy, order.by = economics$date)
+dygraph(ue)
+
+dygraph(ue) %>% dyRangeSelector()
+
+psave = xts(economics$psavert, order.by = economics$date)
+dygraph(cbind(ue, psave))
+ue2 = xts(economics$unemploy/ 1000, order.by = economics$date)
+pu = cbind(ue2, psave)
+colnames(pu) = c('unemploy','saverate')
+dygraph(pu) %>% dyRangeSelector()
