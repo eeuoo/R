@@ -77,6 +77,7 @@ tooltips = paste0(
 # onclick 할 때 실행할 코드
 onclick = sprintf('window.open("http://en.wikipedia.org/wiki/%s")', as.character(chodata$state))
 
+# 작도
 ggplot(chodata, aes(map_id = state)) + 
   geom_map_interactive(aes(fill = Rape,
                            tooltip = tooltips,
@@ -86,10 +87,8 @@ ggplot(chodata, aes(map_id = state)) +
   labs(title="USA Rape", fill = 'Rape') + 
   scale_fill_gradient2('Rape', low='red', mid = 'green', high = 'blue') -> usa_rape
 
-# 작도 1
-ggiraph(code = print(usa_rape))
 
-# 작도 2
+ggiraph(code = print(usa_rape))
 girafe(ggobj = usa_rape)
 
 
@@ -108,17 +107,32 @@ table(is.na(tbc))
 tbc[is.na(tbc)] = 0   
 str(tbc)
 
+
 # year 컬럼 형변환
 tbc$year =  as.character(tbc$year)
 
 tbc2 = tbc %>% filter( year >= '2006' & year <= '2015' ) %>% group_by(name, code) %>% summarise(sum_newpts = sum(NewPts))
 head(tbc2)
 
+# tooltip 마우스 올렸을 때 나타낼 정보
+tooltips2 = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$name)),
+  '<table>',
+  '    <th>결핵환자수</th>',
+  '  <tr>',
+  sprintf('<td> %.0f 만</td>', tbc2$sum_newpts),
+  '  </tr>')
+
 # 작도
-ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
-  geom_map( aes(fill = sum_newpts), map = kormap1) + 
+tbc_map = ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
+  geom_map_interactive( aes(fill = sum_newpts,
+                            tooltip = tooltips2), map = kormap1) + 
   expand_limits(x = kormap1$long, y = kormap1$lat) +
   scale_fill_gradient2('인구', low='green', mid = 'lightyellow', high = 'red') +
   xlab('경도') + ylab('위도') + 
   labs(title="시도별 결핵환자수")
+
+ggiraph(code = print(tbc_map))
+girafe(ggobj = tbc_map)
+
 ```

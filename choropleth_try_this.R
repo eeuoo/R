@@ -23,18 +23,8 @@ tooltips = paste0(
   sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
   '<table>',
   '  <tr>',
-  '    <td>인구(만)</td>',
-  sprintf('<td>%.0f</td>', chodata$UrbanPop * 10),
-  '  </tr>',
-  '  <tr>',
-  '    <td>살인</td>',
-  sprintf('<td>%.0f</td>', chodata$Murder),
-  '  </tr>',
-  '  <tr>',
-  '    <td>폭력</td>',
-  sprintf('<td>%.0f</td>', chodata$Assault),
-  '  </tr>',
-  '</table>' )
+  sprintf('<td>%.0f / %.0f 만</td> ', chodata$Rape, chodata$UrbanPop * 10),
+  '  </tr>' )
 
 onclick = sprintf('window.open("http://en.wikipedia.org/wiki/%s")', as.character(chodata$state))
 
@@ -61,16 +51,28 @@ table(is.na(tbc))
 tbc[is.na(tbc)] = 0   
 str(tbc)
 
+tooltips2 = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$name)),
+  '<table>',
+  '  <tr>',
+  '    <td>결핵환자수</td>',
+  sprintf('<td>%.0f 만</td>', tbc2$sum_newpts),
+  '  </tr>')
+
 tbc$year =  as.character(tbc$year)
 
 tbc2 = tbc %>% filter( year >= '2006' & year <= '2015' ) %>% group_by(name, code) %>% summarise(sum_newpts = sum(NewPts))
 head(tbc2)
 
-ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
-  geom_map( aes(fill = sum_newpts), map = kormap1) + 
+tbc_map = ggplot(tbc2, aes(data = sum_newpts, map_id = code)) +
+  geom_map_interactive( aes(fill = sum_newpts,
+                            tooltip = tooltips2), map = kormap1) + 
   expand_limits(x = kormap1$long, y = kormap1$lat) +
   scale_fill_gradient2('인구', low='green', mid = 'lightyellow', high = 'red') +
   xlab('경도') + ylab('위도') + 
   labs(title="시도별 결핵환자수")
+
+ggiraph(code = print(tbc_map))
+girafe(ggobj = tbc_map)
 
 

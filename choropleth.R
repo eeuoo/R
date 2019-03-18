@@ -47,6 +47,7 @@ chodata = data.frame(state = tolower(rownames(USArrests)), USArrests)
 head(chodata)
 
 usmap = map_data('state')
+usmap
 head(usmap)
 
 ggChoropleth(data=chodata, 
