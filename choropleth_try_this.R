@@ -37,7 +37,6 @@ ggplot(chodata, aes(map_id = state)) +
   labs(title="USA Rape", fill = 'Rape') + 
   scale_fill_gradient2('Rape', low='red', mid = 'green', high = 'blue') -> usa_rape
 
-
 ggiraph(code = print(usa_rape))
 girafe(ggobj = usa_rape)
 

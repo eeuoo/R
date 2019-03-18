@@ -61,18 +61,8 @@ tooltips = paste0(
   sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
   '<table>',
   '  <tr>',
-  '    <td>인구(만)</td>',
-  sprintf('<td>%.0f</td>', chodata$UrbanPop * 10),
-  '  </tr>',
-  '  <tr>',
-  '    <td>살인</td>',
-  sprintf('<td>%.0f</td>', chodata$Murder),
-  '  </tr>',
-  '  <tr>',
-  '    <td>폭력</td>',
-  sprintf('<td>%.0f</td>', chodata$Assault),
-  '  </tr>',
-  '</table>' )
+  sprintf('<td>%.0f / %.0f 만</td> ', chodata$Rape, chodata$UrbanPop * 10),
+  '  </tr>' )
 
 # onclick 할 때 실행할 코드
 onclick = sprintf('window.open("http://en.wikipedia.org/wiki/%s")', as.character(chodata$state))
