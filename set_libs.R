@@ -1,4 +1,3 @@
-library(kormaps2014)
 library(ggiraph)
 library(ggplot2)
 library(ggiraphExtra)
