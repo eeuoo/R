@@ -24,7 +24,8 @@ tooltips = paste0(
   '<table>',
   '  <tr>',
   sprintf('<td>%.0f / %.0f 만</td> ', chodata$Rape, chodata$UrbanPop * 10),
-  '  </tr>' )
+  '  </tr>',
+  '</table>')
 
 onclick = sprintf('window.open("http://en.wikipedia.org/wiki/%s")', as.character(chodata$state))
 
@@ -55,7 +56,8 @@ tooltips2 = paste0(
   '<table>',
   '  <tr>',
   sprintf('<td>결핵환자수 : %.0f 만</td>', tbc2$sum_newpts),
-  '  </tr>')
+  '  </tr>',
+  '</table>')
 
 tbc$year =  as.character(tbc$year)
 
