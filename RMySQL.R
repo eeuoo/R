@@ -54,8 +54,7 @@ dhn_meltop = dbGetQuery(conn2, "select sr.rank, ms.title, ms.genre from Song_Ran
 
 ggplot() +
   geom_point(data=dhn_meltop,
-             aes(x=genre, y=rank),
-             color='darkgreen', size = 2, alpha = 0.5) +
+             aes(x=genre, y=rank, color = genre), alpha = 0.5) +
   xlab("장르") +
   ylab("순위") +
   labs(title = "장르와 순위의 상관관계", subtitle = '멜론 top 100 ')
