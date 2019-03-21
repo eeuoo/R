@@ -8,8 +8,14 @@ library(plotly)
 library(dygraphs)
 library(xts)
 library(gridExtra)
+
 library(sqldf)
 library(RMySQL)
+
+library(tm)
+library(RColorBrewer)
+library(wordcloud)
+
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
 data = load('data/score.csv')
