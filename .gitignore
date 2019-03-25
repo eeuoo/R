@@ -6,4 +6,6 @@ data
 output
 .Rapp.history
 R.Rproj
-
+.httr-oauth
+twitter.R
+.twitter.R
