@@ -1,0 +1,83 @@
+---
+title: "Twitter WordCloud"
+author: "이현주"
+date: '2019년 4월 9일'
+output: html_document
+---
+
+<br>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")
+
+dyn.load(paste0(system2('/usr/libexec/java_home', stdout = TRUE), 
+                '/jre/lib/server/libjvm.dylib'))
+
+load('data/api_key.rda')
+load('data/api_secret.rda')
+load('data/token.rda')
+load('data/token_secret.rda')
+
+library(tm)
+library(RColorBrewer)
+library(wordcloud)
+library(devtools)
+library(KoNLP)
+
+library(twitteR); library(RCurl); library(RJSONIO); library(stringr)
+library(streamR); library(ROAuth)
+
+setup_twitter_oauth(api_key, api_secret, token, token_secret)
+```
+
+
+```{r , echo=TRUE}
+mytweet = searchTwitter(enc2utf8('파이썬'), n=100, lan='ko')
+
+tdf = twListToDF(mytweet)
+tw = unique(tdf$text)
+
+```
+
+```{r , echo=TRUE}
+tw = gsub("[[:cntrl:]]", "", tw)                      
+tw = gsub("http[s]?://[[:alnum:].\\/]+", "", tw)    
+tw = gsub("&[[:alnum:]]+;", "", tw)            
+tw = gsub("@[[:alnum:]]+[:]?", "", tw)           
+tw = gsub("[ㄱ-ㅎㅏ-ㅣ]","",tw)                  
+tw = gsub('\\p{So}|\\p{Cn}', '', tw, perl = TRUE)   
+tw = gsub("\\s{2,}", " ", tw)                  
+tw = gsub("[[:punct:]]", "", tw)
+tw = gsub("RT",'',tw)
+
+head(tw)
+
+py = sapply(tw, extractNoun, USE.NAMES = F)
+py1 = table(unlist(py))
+
+length(py1)
+
+py2 = head(sort(py1, decreasing = T), 100)
+
+
+
+```
+
+```{r , echo=TRUE}
+
+#### wordcloud #######
+library(ggplot2)
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")   
+
+pal = brewer.pal(9, "Set1") 
+
+wordcloud(names(py2), freq=py2, scale=c(5,0.5), min.freq = 1,
+           random.order = F, random.color = T, colors = pal)
+
+```

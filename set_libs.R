@@ -16,7 +16,9 @@ library(tm)
 library(RColorBrewer)
 library(wordcloud)
 
+library(ggplot2)
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
+
 data = load('data/score.csv')
 kdata = load('data/kdata.rda')
