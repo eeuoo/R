@@ -12,6 +12,9 @@ library(gridExtra)
 library(sqldf)
 library(RMySQL)
 
+library(devtools)
+library(KoNLP)
+
 library(tm)
 library(RColorBrewer)
 library(wordcloud)
@@ -19,6 +22,16 @@ library(wordcloud)
 library(ggplot2)
 theme_set(theme_gray(base_family="AppleGothic"))
 par(family = "AppleGothic")
+
+library(twitteR); library(RCurl); library(RJSONIO); library(stringr)
+
+library(streamR); library(ROAuth)
+
+library(arules); library(igraph); library(combinat)
+
+library(arulesViz); library(visNetwork)
+
+library(rvest); library(httr); library(stringr); library(dplyr)
 
 data = load('data/score.csv')
 kdata = load('data/kdata.rda')

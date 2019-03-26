@@ -1,6 +1,8 @@
-mytweet = searchTwitter(enc2utf8('파이썬'), n=100, lan='ko')
-
+mytweet = searchTwitter(enc2utf8('파이썬'), n=100, lan='ko', since='2019-03-11', until='2019-03-31')
+class(mytweet)
 tdf = twListToDF(mytweet)
+colnames(tdf)
+class(tdf)
 tw = unique(tdf$text)
 
 
@@ -15,6 +17,7 @@ tw = gsub("\\s{2,}", " ", tw)
 tw = gsub("[[:punct:]]", "", tw)
 tw = gsub("RT",'',tw)
 
+?extractNoun
 
 py = sapply(tw, extractNoun, USE.NAMES = F)
 py1 = table(unlist(py))
