@@ -151,7 +151,7 @@ head(fwfdata)
 View(fwfdata)
 
 # read excel #####
-install.packages('readxl')
+# install.packages('readxl')
 library('readxl')
 mtx = read_excel('data/melon_top100.xlsx', sheet = 1, col_names = T)
 head(mtx)
@@ -216,7 +216,7 @@ aggregate(data=data[data$국어 >= 80,], cbind(국어,평균)~반, mean)
 library("ggplot2")
 
 # ifelse ####
-data$pass = ifelse(data$평균 >= 60, TRUE, FALSE)
+data$pass = ifelse(data$subMean >= 60, TRUE, FALSE)
 head(data)
 data[data$pass,]
 data$scout = ifelse(data$평균 >= 60, ifelse(data$성별 == '남', 'BoyScout', 'GirlScout'), '')
@@ -246,9 +246,12 @@ LETTERS
 month.name
 month.abb
 pi
+
 # 초기화
 letters = c('AA', 'BB', 'CC')
 letters
 rm(letters)
 letters
 ls(pattern = 'm')
+
+ggplot(data$pass)
