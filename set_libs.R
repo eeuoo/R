@@ -9,6 +9,8 @@ library(dygraphs)
 library(xts)
 library(gridExtra)
 
+library(psych)
+
 library(sqldf)
 library(RMySQL)
 
