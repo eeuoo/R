@@ -1,0 +1,86 @@
+---
+title: "통계 분석"
+author: "이현주"
+date: '2019년 3월 8일'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(psych)
+
+library(ggplot2)
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")
+
+load("~/workspace/R/data/data.rda")
+
+```
+
+<br>
+
+### '죽반과 매반의 수학성적은 차이가 없다' 라는 가설을 검증하시오.
+
+* 참고 : data는 매,난,국,죽 4개의 반 학생들의 성적 데이터이다.
+
+```{r , echo=TRUE}
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")
+
+# 1. 데이터 준비
+head(data)
+
+mjmath = data %>% filter(cls %in% c('죽', '매')) %>% select(cls, math)
+
+mjmath$cls = factor(mjmath$cls, levels=c('죽','매'), labels=c('죽', '매'))
+
+# 2. 데이터 확인 (기술통계 + 그래프)
+describeBy(mjmath$math, mjmath$cls, mat = T)
+
+orgpar = par(no.readonly = T)     
+layout(matrix(c(1,1,2,3), 2, 2, byrow = T))
+boxplot(mjmath$math ~ mjmath$cls)
+hist(mjmath$math[mjmath$cls == '죽'])
+hist(mjmath$math[mjmath$cls == '매'])
+par(orgpar)
+
+# 3. 등분산 검정
+var.test(mjmath$math ~ mjmath$cls, data = mjmath) 
+
+# 4. t-test 수행
+t.test(mjmath$math ~ mjmath$cls, data = mjmath,
+       alternative = c("two.sided"),
+       var.equal = T,                
+       conf.level = 0.95)
+
+# 5. 결과 그래프 
+mu1 = 63.46667
+se1 = 2.144661
+rn1 = sort(rnorm(1000, mu1, se1))
+
+plot(rn1, dnorm(rn1, mu1, se1), col='green', type = 'l', main = '평균점수',
+     xlim = c(50, 80), ylim = c(0, 0.25)) 
+abline(v=mu1, col="green", lty=5)
+
+mu2 = 63.84167
+se2 = 2.114145
+rn2 = sort(rnorm(1000, mu2, se2))
+
+par(new = T) 
+
+plot(rn2, dnorm(rn2, mu2, se2), col='red', type = 'l', main = '평균점수',
+     xlim = c(50, 80), ylim = c(0, 0.25))
+abline(v=mu2, col="red", lty=5)
+
+```
+
+
+### Including Plots
+
+```{r , echo=TRUE}
+
+```
+
+
