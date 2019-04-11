@@ -20,8 +20,11 @@ load("~/workspace/R/data/data.rda")
 ```
 
 <br>
+<br>
 
-### '죽반과 매반의 수학성적은 차이가 없다' 라는 가설을 검증하시오.
+### 1. '죽반과 매반의 수학성적은 차이가 없다' 라는 가설을 검증하시오.
+
+<br>
 
 * 참고 : data는 매,난,국,죽 4개의 반 학생들의 성적 데이터이다.
 
@@ -76,10 +79,73 @@ abline(v=mu2, col="red", lty=5)
 
 ```
 
+<br>
+<br>
 
-### Including Plots
+-----
+### 2. 4개반 수학성적의 유사도(동질의 정도)를 분석하시오.
+
+<br>
+
 
 ```{r , echo=TRUE}
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")
+
+# 기술 통계 확인
+describeBy(data$math, data$cls, mat = T)
+
+# 그래프로 데이터 확인하기 (ggplot2)
+ggplot(data, aes(x=cls, y=kor)) +
+  geom_boxplot(outlier.colour = 'blue') +
+  ggtitle("각반 국어 성적")  # 반별 box
+
+ggplot(data, aes(x=kor)) +
+  geom_histogram(binwidth = 10, col="white") +
+  facet_grid(. ~ data$cls)   # 반별 hist
+
+# 등분산 검정 
+bartlett.test(data$math ~ data$cls, data=data)
+
+# ANOVA 분석
+aaa = aov(data$math ~ data$cls, data = data)
+summary(aaa)
+
+# Welch's ANOVA One-way test 
+oneway.test(data$math ~ data$cls, data = data, var.equal = F)
+
+# 사후 분석
+TukeyHSD(aaa)
+
+# 6. 동질성 결과 그래프
+plot(TukeyHSD(aaa))
+
+# plot 함수 작성 (반복 제거)
+draw = function(rn, mu, se, col){
+  plot(rn, dnorm(rn, mu, se), col=col, type='l',
+       xlim = c(50,80), ylim = c(0, 0.25))
+  abline(v=mu, col=col, lty=5)
+}
+  
+# 4개 한번에 그리기
+mu = 63.59167; se = 2.020535; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'red')     #국
+par(new = T)
+mu = 63.08333; se = 2.028632; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'blue')    #난
+par(new = T)
+mu = 63.8416; se = 2.11414; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'green')   #매
+par(new = T)
+mu = 63.46667; se = 2.144661; rn = sort(rnorm(1000, mu, se))
+draw(rn, mu, se, 'black')   #죽
+ 
+legend('topright',
+       legend = c('국', '난', '매', '죽'),
+       pch = 8,
+       col =c('red', 'blue', 'green', 'black'),
+       bg='white')
+
 
 ```
 
