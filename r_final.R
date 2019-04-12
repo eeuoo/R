@@ -91,6 +91,7 @@ draw(rn, mu, se, 'blue')    #난
 par(new = T)
 mu = 63.8416; se = 2.11414; rn = sort(rnorm(1000, mu, se))
 draw(rn, mu, se, 'green')   #매
+
 par(new = T)
 mu = 63.46667; se = 2.144661; rn = sort(rnorm(1000, mu, se))
 draw(rn, mu, se, 'black')   #죽
@@ -101,4 +102,64 @@ legend('topright',
        col =c('red', 'blue', 'green', 'black'),
        bg='white')
 
+par(orgpar)
 
+
+
+# 전교생의 국어성적과 영어성적에 대한 상관분석(Correlation)을 수행하시오.
+data %>% select(kor, eng) -> cdata
+
+describe(cdata)
+pairs.panels(cdata)  
+
+cor(cdata, use = "complete.obs",  
+    method = c("pearson"))   
+
+plot(kor ~ eng, data=cdata)
+abline(lm(kor ~ eng, data=cdata), col='red')  
+
+
+# 단순 회귀 분석
+mpg %>% select(displ, cty) -> cdata
+lm(cty ~ displ, data=cdata) -> lmdata
+summary(lmdata) 
+pairs.panels(cdata)
+par(mfrow=c(2,2))
+plot(lmdata)  
+par(orgpar)
+shapiro.test(lmdata$residuals)    
+
+# 다중 회귀 분석
+mpg %>% select(displ, year, cyl, cty) -> cdata2
+describe(cdata2)
+pairs.panels(cdata2)
+lmdata2 = lm(cty ~ displ+cyl+year, data=cdata2)    
+lmdata2 = lm(cty ~ displ+cyl, data=cdata2)       # year는 무관하므로 제거
+summary(lmdata2)
+
+install.packages('car')
+library(car)
+vif(lmdata2)
+par(mfrow=c(2,2))
+plot(lmdata2)  
+par(orgpar)
+
+# 로지스틱 회귀 분석
+unique(mpg$trans) 
+unique(mpg$year)
+
+cdata3 = mpg %>%
+  mutate(trs = ifelse(substr(trans, 1, 4) == 'auto', 1, 0), 
+         y = ifelse(year == 1999, 0, 1)) %>%
+  select(y, displ, cyl, trs, cty, hwy)
+
+describe(cdata3)
+pairs.panels(cdata3)
+
+glmdata = glm(y ~ displ+cyl+cty+hwy+trs, family = binomial, data=cdata3)
+summary(glmdata)
+par(mfrow=c(2,2))
+plot(glmdata)
+par(orgpar)
+
+round(exp(cbind(LOR = coef(glmdata), confint(glmdata))), 2)

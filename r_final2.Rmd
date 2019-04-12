@@ -1,0 +1,88 @@
+---
+title: "통계 분석 2"
+author: "이현주"
+date: '2019년 3월 8일'
+output: html_document
+---
+
+<br>
+<br>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+load("~/workspace/R/data/data.rda")
+ggplot2::mpg
+
+library(dplyr)
+library(psych)
+
+library(ggplot2)
+theme_set(theme_gray(base_family="AppleGothic"))
+par(family = "AppleGothic")
+
+```
+
+### 1. 전교생의 국어성적과 영어성적에 대한 상관분석(Correlation)을 수행하시오.
+
+<br>
+
+* 참고 : data는 매, 난, 국, 죽 4개의 반 학생들의 성적 데이터이다.
+
+```{r, echo=TRUE}
+# 1. 데이터 준비
+data %>% select(kor, eng) -> cdata
+
+# 2. 기술 통계 확인
+describe(cdata)
+
+# 3. 그래프로 데이터 확인하기
+pairs.panels(cdata)  
+
+# 4. 상관분석
+cor(cdata, use = "complete.obs",  
+    method = c("pearson"))   
+
+# 5. 결과 그래프 
+plot(kor ~ eng, data=cdata)
+abline(lm(kor ~ eng, data=cdata), col='red') 
+
+```
+
+<br>
+<br>
+
+------
+
+### 2. mpg데이터의 displ, cyl, trans, cty, hwy 중 1999년과 2008년 두 해의 고객 만족도가 0과 1이라고 했을 때, 어떤 요소가 만족도에 많은 기여를 했는지 로지스틱 회귀분석하시오.
+
+<br>
+
+```{r pressure, echo=TRUE, message=FALSE}
+# 1. 데이터 준비 : 1999년과 2008년 두 해의 만족도가 0과 1
+unique(mpg$trans) 
+unique(mpg$year)
+
+cdata3 = mpg %>%
+  mutate(trs = ifelse(substr(trans, 1, 4) == 'auto', 1, 0), 
+         y = ifelse(year == 1999, 0, 1)) %>%
+  select(y, displ, cyl, trs, cty, hwy)
+
+# 2. 기본 통계치 확인
+describe(cdata3)
+pairs.panels(cdata3)
+
+# 3. 분석
+glmdata = glm(y ~ displ+cyl+cty+hwy+trs, family = binomial, data=cdata3)
+summary(glmdata)
+
+par(mfrow=c(2,2))
+plot(glmdata)
+
+
+# 4. coefficients(기울기+절편)와 confint(신뢰구간)로 LOR(Log Odd Ratio) 구하기
+round(exp(cbind(LOR = coef(glmdata), confint(glmdata))), 2)
+
+```
+
+
