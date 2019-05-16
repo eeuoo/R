@@ -26,6 +26,8 @@ reshape::cast(T, day~month~variable)
 
 b = reshape2::acast(T, month~variable, mean)
 
-b
+d = reshape::cast(T, month~variable, mean, margins = c("grand_row", "grand_col"))
 
+e = reshape::cast(T, day~month, mean, subset = variable == "ozone")
 
+f = reshape::cast(T, month~variable, range)
