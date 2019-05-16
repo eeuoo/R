@@ -3,7 +3,7 @@ library(reshape)
 
 install.packages("reshape2")
 
-data("airquality")     # airquality 
+data("airquality")     # airquality 데이터 가져오기
 airquality
 
 colnames(airquality)
@@ -22,7 +22,8 @@ T = reshape::melt(airquality, id = c("month", "day"), na.rm = TRUE)
 
 reshape::cast(T, day~month~variable)
 
-??cast
+??cast 
+
 
 b = reshape2::acast(T, month~variable, mean)
 
@@ -31,3 +32,5 @@ d = reshape::cast(T, month~variable, mean, margins = c("grand_row", "grand_col")
 e = reshape::cast(T, day~month, mean, subset = variable == "ozone")
 
 f = reshape::cast(T, month~variable, range)
+
+
