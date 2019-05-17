@@ -70,3 +70,18 @@ ddply( d, .(year), summarise, mean.count = mean(count) )
 
 # ddplay의 transform : 연산 결과를 데이터 프레임의 새로운 칼럼에 저장.
 ddply(d, .(year), transform, total.count = sum(count) )
+
+
+
+##### 데이터 테이블 #####
+#install.packages("data.table")
+library(data.table)
+
+DT = data.table( x = c("b", "b", "b", "a", "a"), v = rnorm(5))
+
+str(cars)
+
+CARS = as.data.table(cars)
+head(CARS)
+
+tables()
