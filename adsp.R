@@ -37,3 +37,19 @@ e = reshape::cast(T, day~month, mean, subset = variable == "ozone")
 f = reshape::cast(T, month~variable, range)
 
 
+
+#### sqldf를 이용한 데이터 분석
+
+install.packages("sqldf")
+library(sqldf)
+
+
+data(iris)
+
+sqldf("select * from iris")
+sqldf("select * from iris limit 10")
+sqldf("select count(*) from iris where species like '%se'")
+
+
+ 
+
