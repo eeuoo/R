@@ -1,7 +1,7 @@
-install.packages("reshape")
+# install.packages("reshape")
 library(reshape)
 
-install.packages("reshape2")
+# install.packages("reshape2")
 
 data("airquality")     # airquality 데이터 가져오기
 airquality
@@ -38,9 +38,9 @@ f = reshape::cast(T, month~variable, range)
 
 
 
-#### sqldf를 이용한 데이터 분석
+#### sqldf를 이용한 데이터 분석 #####
 
-install.packages("sqldf")
+# install.packages("sqldf")
 library(sqldf)
 
 
@@ -51,5 +51,22 @@ sqldf("select * from iris limit 10")
 sqldf("select count(*) from iris where species like '%se'")
 
 
- 
+##### plyr #####
 
+set.seed(1)
+d <- data.frame( year = rep(2012:2014,each=6), count = round(runif(9,0,20)) )
+
+library(plyr)
+
+ddply( d, "year", function(x){
+  mean.count = mean(x$count)
+  sd.count = sd(x$count)
+  cv = sd.count / mean.count
+  data.frame(cv.count = cv)
+})
+
+# ddplay의 summarise : 데이터의 요약 정보를 새로운 변수에 만든다.
+ddply( d, .(year), summarise, mean.count = mean(count) )
+
+# ddplay의 transform : 연산 결과를 데이터 프레임의 새로운 칼럼에 저장.
+ddply(d, .(year), transform, total.count = sum(count) )
