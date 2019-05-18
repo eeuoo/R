@@ -84,4 +84,16 @@ str(cars)
 CARS = as.data.table(cars)
 head(CARS)
 
-tables()
+data.table::tables()
+
+sapply(CARS, class)
+
+# setkey( 데이터 테이블, 정렬할 컬럼), 컬럼에 key를 지정한다.
+data.table::setkey(DT, x)
+DT
+
+# 'b'가 들어간 데이터 표시
+DT['b']
+DT['b', mult = 'first']
+DT['b', mult = 'last']
+
