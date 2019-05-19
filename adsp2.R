@@ -89,3 +89,50 @@ a <- lm(y~x1+x2, df)
 summary(a)  
 # F통계량 :  229.5,  p-value: 4.407e-09 이 유의확률 0.05 아래에서 유의하고, 설명변수 x1, x2 유의확률값이 유의하므로 변수제거를 멈춘다.
 # 최종 회귀식 : y = 52.57735 +  1.46831x1 + 0.66225x2 로 추정된다.
+
+
+# 6. 예에서 주어진 자료와 선형회귀모형에 대해 전진 선택법을 적용하여 모형을 선택하시오. 
+
+# step( lm(종속변수~설명변수, 데이터셋), scope = list(lower=~1, upper=~설명변수), direction = 변수선택방법)
+step(lm(y~1,df), scope = list(lower =~ 1, upper =~ x1 + x2 + x3 + x4), 
+     direction = "forward")
+
+# scope 분석할 때 고려할 변수의 범위를 지정. '1'은 상수항.
+# direction : 변수선택 방법. forward, backward, both.
+# 최종 회귀식 : y = 71.6483 - 0.2365x4 + 1.4519x1 + 0.4161x2  
+
+
+
+#### 다변량 분석 ####
+
+#상관계수 검정
+cor.test( c(1,2,3,4,5), c(1,0,5,7,9), method = "pearson" )
+# p-value : 0.01523, p값이 0.05보다 작으므로 상관관계가 유의하다.
+
+cor.test( c(1,2,3,4,5), c(1,0,5,7,9), method = "spear" )
+
+#다차원척도법
+loc <- cmdscale(eurodist)
+x <- loc[ ,1]
+y <- loc[ ,2]
+
+plot(x, y, type = 'n', main = 'eurodist')
+text(x, y, rownames(loc), cex = .8, col = 'red')
+abline(v = 0, h = 0)
+
+#주성분 분석
+library(datasets)
+data("USArrests")
+
+fit <- prcomp(USArrests, scale = TRUE)   # 주성분 분석 함수, sclae = T 표준화
+summary(fit)
+# 첫번째 주성분  PC1이 전체의 62%로 첫번째만 수용했을 때 정보손실은 38%.
+
+fit$rotation   # 주성분들의 로딩 벡터
+
+plot(fit, type = "lines")
+# 스크리도표 : 고유값이 1보다 크며 하나의 요인이 변수 1개 이상의 분신을 설명한다는 의미이다. 1보다 작으면 요인으로서 의미가 없다는 뜻. 
+
+biplot(fit)
+
+
