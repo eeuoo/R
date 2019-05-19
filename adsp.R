@@ -97,3 +97,48 @@ DT['b']
 DT['b', mult = 'first']
 DT['b', mult = 'last']
 
+
+
+#### 데이터 기초 통계 ####
+
+data(iris)
+head(iris)
+str(iris)
+summary(iris)
+cov(iris[,1:4])   # covariance(공분산)
+cor(iris[,1:4])   # correlation(상관계수)
+
+# 결측값 처리
+y = c(1,2,3,NA)
+is.na(y)
+
+# iris 데이터 특정값 결측처리
+iris[iris$Petal.Width == 0.2, "Petal.Width"] <- NA
+is.na(iris$Sepal.Width)
+
+x <- c(1,2,NA,3)
+mean(x)
+mean( x, na.rm = TRUE )
+
+library(reshape)
+data("french_fries")
+
+# coplete.cases()를 통해 결측열만 추출
+french_fries[!complete.cases(french_fries), ]
+
+#install.packages("Amelia")
+library(Amelia)
+
+data("freetrade")
+head(freetrade)
+
+# m : imputation 데이터셋 수
+a.out <- amelia(freetrade, m=5, ts='year', cs='country')
+
+# 결측값 제거 전
+hist(a.out$imputations[[3]]$tariff, col = 'grey', border='white')
+missmap(a.out)
+
+# 결측값 제거 후
+freetrade$tariff <- a.out$imputations[[5]]$tariff
+missmap(freetrade)
