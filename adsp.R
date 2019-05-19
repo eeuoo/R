@@ -142,3 +142,21 @@ missmap(a.out)
 # 결측값 제거 후
 freetrade$tariff <- a.out$imputations[[5]]$tariff
 missmap(freetrade)
+
+
+
+#### 이상값 검색 ####
+#install.packages("outliers")
+library(outliers)
+
+set.seed(1234)
+
+y = rnorm(100)
+mean(y)
+outlier(y)    # 평균과 가장 차이나는 값 (정방향)
+outlier(y, opposite = TRUE)  # 평균과 가장 차이나는 값 (역방향)
+
+dim(y) <- c(20,5)  # 행 20, 열 5 의 행렬로
+
+outlier(y)  # 각 열의 평균과 가장 차이가 많은 나는 값 
+outlier(y, opposite = TRUE) 
