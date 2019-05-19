@@ -160,3 +160,5 @@ dim(y) <- c(20,5)  # 행 20, 열 5 의 행렬로
 
 outlier(y)  # 각 열의 평균과 가장 차이가 많은 나는 값 
 outlier(y, opposite = TRUE) 
+
+boxplot(y)
