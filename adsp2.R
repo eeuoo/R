@@ -163,3 +163,22 @@ plot(ldeaths.decompose)
 ldeaths.decompose.adj <- ldeaths - ldeaths.decompose$seasonal
 plot(ldeaths.decompose.adj)
 
+
+#### ARIMA 모델 적합 및 결정 #####
+
+acf(Nile.diff2, lag.max = 20)
+acf(Nile.diff2, lag.max = 20, plot = FALSE)
+
+#부분자기상환함수 pacf()
+pacf(Nile.diff2, lag.max = 20)
+pacf(Nile.diff2, lag.max = 20, plot = FALSE)
+
+#install.packages("forecast")
+library(forecast)
+
+auto.arima(Nile)
+Nile.arima <-  arima(Nile, order = c(1,1,1))
+#데이터에 모형을 적합한 후, forecast 함수를 이용하여 미래의 수치값을 예측
+
+Nile.forecast <- forecast(Nile.arima, h = 50)   # h : 연도, 50년의 나일강 데이터
+plot(Nile.forecast)
