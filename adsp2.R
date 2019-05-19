@@ -136,3 +136,30 @@ plot(fit, type = "lines")
 biplot(fit)
 
 
+
+#### 시계열 예측 #####
+
+#분해 시계열 
+
+# 1. R에 기본적으로 내장되어 있는 Nile 데이터이다. 1871년부터 1970년까지 아스완 댐에서 측정한 나일강의 연간 유입량에 대한 시계열 데이터이다. 
+Nile
+plot(Nile)
+
+Nile.diff1 <- diff(Nile, differences = 1)
+plot(Nile.diff1)
+
+Nile.diff2 <- diff(Nile, differences = 2)
+plot(Nile.diff2)
+
+# 2. ldeaths 1974년부터 1979년까지 영국 내의 월별 폐질환 사망자에 관한 시열 자료이다.
+ldeaths
+plot(ldeaths)
+
+#decompose() 함수로 시계열 자료를 4가지 요인으로 분해
+ldeaths.decompose <- decompose(ldeaths)
+ldeaths.decompose$seasonal
+plot(ldeaths.decompose)
+
+ldeaths.decompose.adj <- ldeaths - ldeaths.decompose$seasonal
+plot(ldeaths.decompose.adj)
+
