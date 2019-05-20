@@ -34,3 +34,25 @@ exp(-61.318)*exp(2.211*28)   # 28도에서 오즈 예측값
 # 즉, 28도에서 오즈 예측값은 27도에서의 오즈 예측값보다 exp(2.211) = 9.125배
 
 
+# 4. iris 데이터 로지스틱 회귀분석
+colnames(iris) = tolower(colnames(iris))
+a = subset(iris, species == 'setosa' | species == 'versicolor')
+# 로지스틱 회귀를 하기 위해 범주가 2개인 setosa = 1 과 versicolor = 2 만 추출.
+
+a$species = factor(a$species)  # 2개 레벨을 가지 새로운 factor행(범주형)
+
+b = glm(species ~ sepal.length, data = a, family = binomial)
+summary(b)
+
+coef(b)      
+
+fitted(b)[c(1:3, 98:100)]
+# 로지스틱 회귀모델은 0 또는 1로 값을 예측하는 모델이다. 적합된 값을 통해 0.5 이하면 'setosa', 0.5 이상이면 'versicolor' 예측값을 의미한다.
+
+predict(b, newdata = a[c(1, 50, 51, 100),], type = 'response')
+# type을 response로 지정하고 예측 수행하면 0~1 사이 확률을 구해준다.
+
+cdplot(species~sepal.length, data = a)
+# cdplot() 함수 : 연속형 변수의 변화에 따른 범주형 변수의 조건부 분포를 보여준다.
+# sepal.length가 커짐에 따라 versicolor의 확률이 증가.
+
