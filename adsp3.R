@@ -56,3 +56,22 @@ cdplot(species~sepal.length, data = a)
 # cdplot() 함수 : 연속형 변수의 변화에 따른 범주형 변수의 조건부 분포를 보여준다.
 # sepal.length가 커짐에 따라 versicolor의 확률이 증가.
 
+
+# 5. 이항변수 vs(0:flat engine, 1:straight engine)를 반응변수로, mpg와 am(Transmission : automatic = 0, manual = 1)을 예측변수로 하는 로지스틱 회귀 모형을 추정하시오.
+str(mtcars)    # attach() 데이터 프레임에 바로 접근
+
+glm.vs = glm(vs~mpg + am, data = mtcars, family = 'binomial')
+summary(glm.vs)
+# am이 주어질 때 mpg 값이 한 단위 증가할 때 vs=1의 오즈가 exp(0.6809) = 1.98(98%) 증가한다. 
+# mpg가 주어질 때 am의 효과는 exp(-3.0073) = 0.05배, 즉 변속기가 수동인 경우 자동에 비해 vs=1의 오즈가 95% 감소한다.
+
+
+# 6. ANOVA : 모형의 적합 단계별로 이탈도의 감소량과 유의성 검정 결과를 제시
+anova(glm.vs, test = 'Chisq')
+# am가 포함되었을 때 resid.Dev의 값이 가장 많이 하락한다.
+
+#install.packages('pscl')
+library(pscl)
+
+pR2(glm.vs)
+# r2CU 의 값이 0.6914854으로 보아 모델이 데이터셋의 분산의 약 69.1%정도 설명하고 있다. 
