@@ -106,3 +106,60 @@ actual = test$species
 confusion.matrix = table(actual, predict.model)
 sum(predict.model == actual) / NROW(predict.model)    # 97.3의 정확도
 
+
+#### 의사결정나무 #####
+colnames(iris) = tolower(colnames(iris))
+#install.packages('rpart')
+library(rpart)
+
+k = rpart(species~., data = iris)
+
+plot(k, compress = TRUE, margin = .3)
+text(k, cex = 1.0)
+
+#install.packages('rpart.plot')
+library(rpart.plot)
+
+prp(k, type = 4, extra = 2, digits = 3)
+
+#정확성 평가
+head(predict(k, newdata = iris, type = 'class'))
+printcp(k)  # error가 제일 낮은 부분 찾기
+plotcp(k)
+
+#install.packages('caret')
+library(caret)
+
+#install.packages('e1071')
+library(e1071)
+
+rpartpred = predict(k, iris, type = 'class')    # 예측
+confusionMatrix(rpartpred, iris$species)    # 정확성 평가
+
+
+##### 앙상블 모형 #####
+#install.packages('adabag')
+library(adabag)
+
+data(iris)
+set.seed(1)
+
+train = c(sample(1:50, 25), sample(51:100, 25), sample(101:150, 25))
+
+#species에서 각각 25개 sampling
+iris.bagging = bagging(Species~., data = iris[train,], mfinal = 10, control = rpart.control(maxdepth = 1))
+
+iris.bagging$importance
+#가장 큰 기여를 하는 변수는 Petal.Length(70.32%), Petal.Width(29.67%)
+
+barplot(iris.bagging$importance[order(iris.bagging$importance, decreasing = TRUE)], ylim = c(0, 100), main = 'Variables Relative Importance', col = 'red')
+
+table(iris.bagging$class, iris$Species[train], dnn = c('Predicted Class', 'Observed Class'))
+# virginica 1개가 versicolor로 잘못 분류됨.
+
+1 - sum(iris.bagging$class == iris$Species[train]) / length(iris$Species[train])
+# 따라서 error는 1.333333 %
+
+iris.predbagging = predict.bagging(iris.bagging, newdata = iris[train, ])
+# 따라서 error는 1.333333 %
+
