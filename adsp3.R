@@ -75,3 +75,34 @@ library(pscl)
 
 pR2(glm.vs)
 # r2CU 의 값이 0.6914854으로 보아 모델이 데이터셋의 분산의 약 69.1%정도 설명하고 있다. 
+
+
+##### 신경망 모형 ####
+colnames(iris) = tolower(colnames(iris))
+#install.packages("nnet")
+library(nnet)
+data <- iris
+
+Scale = data.frame(lapply(data[,1:4], function(x) scale(x)))
+Scale$species = data$species
+
+#신경망 모형 적합 전 scaling(정규화)이 필요
+index = sample(1:nrow(Scale), round(0.75*nrow(Scale)), replace = FALSE)
+
+#데이터 분할 (train / test)
+train = Scale[index,]
+test = Scale[-index,]
+
+#출력, 은닉, 입력 노드의 수와 가중치의 수를 보여준 후 입력 노드 → 은닉 노드, 은닉 노드 → 입력 노드로 가는 가중치의 값을 보여준다. 
+model = nnet(species~., size = 2, decay = 5e-04, data = train)
+summary(model)
+
+#신경망 모델의 검증
+#predict : 결과는 테스트 집합에 대한 예측 결과를 벡터 형태로 제공
+predict.model = predict(model, test[,1:4], type = 'class')
+
+#오분류표를 만들기 위해 table 함수를 이용해 실제 결과와 예측 결과에 대한 교차표 작성
+actual = test$species
+confusion.matrix = table(actual, predict.model)
+sum(predict.model == actual) / NROW(predict.model)    # 97.3의 정확도
+
