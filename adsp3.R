@@ -221,4 +221,10 @@ plot(p)
 table(p, iris_test[,3])
 
 
+# naive bayes (나이브 베이즈)
+colnames(iris) = tolower(colnames(iris))
 
+m = naiveBayes(species~., data = iris)
+# [,1]setosa 평균, [,2]setosa 표준편차
+
+table(predict(m, iris[,-5]), iris[,5], dnn = list('predicted', 'actual'))
