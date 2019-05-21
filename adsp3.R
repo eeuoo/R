@@ -138,6 +138,7 @@ confusionMatrix(rpartpred, iris$species)    # 정확성 평가
 
 
 ##### 앙상블 모형 #####
+# 1. bagging(배깅)
 #install.packages('adabag')
 library(adabag)
 
@@ -162,4 +163,62 @@ table(iris.bagging$class, iris$Species[train], dnn = c('Predicted Class', 'Obser
 
 iris.predbagging = predict.bagging(iris.bagging, newdata = iris[train, ])
 # 따라서 error는 1.333333 %
+
+
+# 2. boosting(부스팅) 
+set.seed(1)
+train = c(sample(1:50, 25), sample(51:100, 25), sample(101:150, 25))
+
+iris.adaboost = boosting(Species~., data=iris[train,], mfinal = 10, control = rpart.control(maxdepth = 1))   # importance, weight이 배깅과 다르다.
+
+table(iris.adaboost$class, iris$Species[train], dnn = c('predicted class', 'Observed Class'))  # 배깅과 결과 같음.
+
+
+# 3. random forest (랜덤 포레스트)
+#install.packages('randomForest')
+library(randomForest)
+library(rpart)
+data(stagec)
+
+# 결측값 없는 행만 추출. complete.cases : NA 있는지 확인
+stagec3 = stagec[complete.cases(stagec), ]
+
+# 샘플링(train, test)
+set.seed(1234)
+ind = sample(2, nrow(stagec3), replace = TRUE, prob = c(0.7, 0.3))
+
+train = stagec3[ind == 1,]
+test = stagec3[ind == 2, ]
+
+# proximity 분석 대상 자료 간의 유사도를 산정한 값
+rf = randomForest(ploidy~., data = train, ntree = 100, proximity =TRUE, importance = TRUE)
+table(predict(rf), train$ploidy)
+print(rf)
+# Confusion matrix : 정오분류표, OOB : Out Of Bag, 모델 훈련에 사용되지 않은 데이터를 사용한 에러 추정치
+
+varImpPlot(rf)
+# 정확성, 불순도 개선 기여도 모두 g2가 가장 높다.
+
+
+# SVM (서포트 벡터 머신)
+library(e1071)
+
+s = sample(150, 100)  # 150 중 100 샘플링
+col = c('Petal.Length', 'Petal.Width', 'Species')   # 컬럼명 지정
+
+iris_train = iris[s, col]
+iris_test = iris[-s, col]
+
+# linear kernel 방식으로 modeling
+# cost : 커널 파라미터 cost 과적합 조절, kernel : 커널 함수
+iris_svm = svm(Species~., data = iris_train, cost = 1, kernel = 'linear')
+
+plot(iris_svm, iris_train[, col])
+
+# svm train vs test 결과 예측
+p = predict(iris_svm, iris_test[,col], type = 'class')
+plot(p)
+table(p, iris_test[,3])
+
+
 
