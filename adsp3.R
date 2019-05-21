@@ -1,3 +1,4 @@
+# 분류 분석
 ##### 로지스틱 회귀모형 ######
 
 # 온도 변화에 따른 거북이 알의 수멋과 암컷의 결과
@@ -200,7 +201,8 @@ varImpPlot(rf)
 # 정확성, 불순도 개선 기여도 모두 g2가 가장 높다.
 
 
-# SVM (서포트 벡터 머신)
+
+#### SVM (서포트 벡터 머신) #####
 library(e1071)
 
 s = sample(150, 100)  # 150 중 100 샘플링
@@ -221,10 +223,82 @@ plot(p)
 table(p, iris_test[,3])
 
 
-# naive bayes (나이브 베이즈)
+
+#### naive bayes (나이브 베이즈) #####
 colnames(iris) = tolower(colnames(iris))
 
 m = naiveBayes(species~., data = iris)
 # [,1]setosa 평균, [,2]setosa 표준편차
 
 table(predict(m, iris[,-5]), iris[,5], dnn = list('predicted', 'actual'))
+
+
+##### 모형 평가 #####
+# bootstrap
+# ROC 그래프
+# 1. infert data를 신경망 모형과 싀사결정 모형을 통해 모평 평가를 한다. 
+set.seed(1234)
+str(infert)
+
+infert = infert[sample(nrow(infert)),]
+infert = infert[ , c('age', 'parity', 'induced', 'spontaneous', 'case')]
+
+traindata = infert[1:(nrow(infert)*0.7 + 1), ]
+testdata = infert[(nrow(infert)*0.7 + 1) : nrow(infert), ]
+
+#install.packages("neuralnet")
+library(neuralnet)
+
+m = model.matrix(~ case + age + parity + induced + spontaneous, data = traindata)
+
+net.infert = neuralnet(case~age + parity + induced + spontaneous, data = m, hidden = 3, err.fct = 'ce', linear.output = FALSE, likelihood = TRUE)
+
+n_test = subset(testdata, select = -case)
+head(n_test)
+
+# model estimate value
+nn_pred = compute(net.infert, n_test)
+testdata$net_pred = nn_pred$net.result
+head(testdata)
+
+# decision tree
+#install.packages("C50")
+library(C50)
+
+traindata$case = factor(traindata$case)
+
+dt.infert = C5.0(case~age + parity + induced + spontaneous, data = traindata)
+
+# predict value extract
+testdata$dt_pred = predict(dt.infert, testdata, type = 'prob')[ ,2]
+head(testdata)
+
+#install.packages('Epi')
+library(Epi)
+
+neural_ROC = ROC(form = case~net_pred, data = testdata, plot = 'ROC')
+dtree_ROC = ROC(form = case~dt_pred, data = testdata, plot = 'ROC')
+# 분석 결과 신경망 모형의 AUC(0.723)가 의사결정나무 AUC(0.661)보다 높아 신경망 모형의 분류분석 모형이 더 높은 성과를 보여주고 있다. 
+
+
+# 이익도표와 향상도
+#install.packages('ROCR')
+library(ROCR)
+
+n_r = prediction(testdata$net_pred, testdata$case)
+d_r = prediction(testdata$dt_pred, testdata$case)
+
+n_p = performance(n_r, 'tpr', 'fpr')
+d_p = performance(d_r, 'tpr', 'fpr')
+
+plot(n_p, col = 'red')
+par(new = TRUE)
+plot(d_p, col = 'blue')
+abline(a = 0, b = 1)
+par(new = FALSE)
+
+# 신경망 모형의 향상도 곡선
+n_lift = performance(n_r, 'lift', 'rpp')
+plot(n_lift, col = 'red')
+abline(v = 0.2)
+# 신경망 모형의 경우 상위 20%의 집단에 대하여 랜덤 모델과 비교할 때 2배의 성과 향상을 보인다. 
