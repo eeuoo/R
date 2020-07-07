@@ -24,6 +24,7 @@ text_df
 
 # library(remotes)
 # install_github("juliasilge/tidytext")
+# https://github.com/juliasilge/tidytext
 library(tidytext)
 
 
@@ -67,6 +68,7 @@ tidy_books %>%
   coord_flip()
 
 # install.packages("gutenbergr")
+# https://github.com/ropensci/gutenbergr
 library(gutenbergr)
 
 hgwells <- gutenberg_download(c(35, 36, 5230, 159))
