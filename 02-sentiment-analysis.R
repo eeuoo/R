@@ -1,4 +1,5 @@
 # 정서분석
+# - inner join 으로 정서분석
 
 library(knitr)
 opts_chunk$set(message = FALSE, warning = FALSE, cache = TRUE)
@@ -139,3 +140,36 @@ tidy_books %>%
   comparison.cloud(colors = c("gray20", "gray80"),
                    max.words = 100)
 
+
+### 단순한 단어 이상인 단어 보기 
+PanP_sentences <- tibble(text = prideprejudice) %>% 
+  unnest_tokens(sentence, text, token = "sentences")
+
+PanP_sentences$sentence[2]
+
+austen_chapters <- austen_books() %>%
+  group_by(book) %>%
+  unnest_tokens(chapter, text, token = "regex", 
+                pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%
+  ungroup()
+
+austen_chapters %>% 
+  group_by(book) %>% 
+  summarise(chapters = n())
+
+bingnegative <- get_sentiments("bing") %>% 
+  filter(sentiment == "negative")
+
+wordcounts <- tidy_books %>%
+  group_by(book, chapter) %>%
+  summarize(words = n())
+
+tidy_books %>%
+  semi_join(bingnegative) %>%
+  group_by(book, chapter) %>%
+  summarize(negativewords = n()) %>%
+  left_join(wordcounts, by = c("book", "chapter")) %>%
+  mutate(ratio = negativewords/words) %>%
+  filter(chapter != 0) %>%
+  top_n(1) %>%
+  ungroup()
