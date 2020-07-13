@@ -1,4 +1,6 @@
-# Analyzing word and document frequency: tf-idf 
+# 단어와 문서의 빈도 분석 : tf-idf 
+# - tf : term frequency , 용어빈도
+# - idf : inverse document frequency, 역문서빈도
 
 library(knitr)
 opts_chunk$set(message = FALSE, warning = FALSE, cache = TRUE)
@@ -29,6 +31,8 @@ ggplot(book_words, aes(n/total, fill = book)) +
   xlim(NA, 0.0009) +
   facet_wrap(~book, ncol = 2, scales = "free_y")
 
+
+### 지프의 법칙 
 
 freq_by_rank <- book_words %>%
   group_by(book) %>%
