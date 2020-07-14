@@ -61,3 +61,38 @@ bigram_tf_idf <- bigram_united %>%
   arrange(desc(tf_idf))
 
 bigram_tf_idf
+
+
+### 정서분석에 바이그램으로 문맥 파악
+
+bigrams_separated %>% 
+  filter(word1 == "not") %>%
+  count(word1, word2, sort = TRUE)
+
+load("~/workspace/R/afinn.rda")
+AFINN <- afinn
+
+AFINN
+
+not_words <- bigrams_separated %>%
+  filter(word1 == "not") %>%
+  inner_join(AFINN, by = c(word2 = "word")) %>%
+  count(word2, value, sort = TRUE)
+
+not_words
+
+library(ggplot2)
+
+not_words %>%
+  mutate(contribution = n * value) %>%
+  arrange(desc(abs(contribution))) %>%
+  head(20) %>%
+  mutate(word2 = reorder(word2, contribution)) %>%
+  ggplot(aes(word2, n * value, fill = n * value > 0)) +
+  geom_col(show.legend = FALSE) +
+  xlab("Words preceded by \"not\"") +
+  ylab("Sentiment value * number of occurrences") +
+  coord_flip()
+
+
+  
