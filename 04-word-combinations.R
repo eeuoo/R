@@ -94,5 +94,52 @@ not_words %>%
   ylab("Sentiment value * number of occurrences") +
   coord_flip()
 
+negation_words <- c("not", "no", "never", "without")
 
-  
+negated_words <- bigrams_separated %>%
+  filter(word1 %in% negation_words) %>%
+  inner_join(AFINN, by = c(word2 = "word")) %>%
+  count(word1, word2, value, sort = TRUE) %>%
+  ungroup()
+
+negated_words
+
+negated_words %>%
+  mutate(contribution = n * value,
+         word2 = reorder(paste(word2, word1, sep = "__"), contribution)) %>%
+  group_by(word1) %>%
+  top_n(12, abs(contribution)) %>%
+  ggplot(aes(word2, contribution, fill = n * value > 0)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ word1, scales = "free") +
+  scale_x_discrete(labels = function(x) gsub("__.+$", "", x)) +
+  xlab("Words preceded by negation term") +
+  ylab("Sentiment value * # of occurrences") +
+  coord_flip()
+
+
+### 바이그램 연결망 시각화
+# - from : 연결선이 나가는 정점
+# - to : 연결선이 향하는 정점
+# - weight : 각 연결선과 연관된 숫자 값
+
+# install.packages("igraph") https://igraph.org/r/
+library(igraph)
+
+bigram_counts # 원래 카운트
+
+# 상대적으로 흔한 조합만을 선별하는 필터
+bigram_graph <- bigram_counts %>%
+  # filter(n > 20) %>%
+  graph_from_data_frame()
+
+bigram_graph
+
+# install.packages("ggraph")
+library(ggraph)
+set.seed(2020)
+
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
