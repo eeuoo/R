@@ -135,7 +135,12 @@ bigram_graph <- bigram_counts %>%
 
 bigram_graph
 
-# install.packages("ggraph")
+# install.packages("ggraph") https://www.rdocumentation.org/packages/ggraph/versions/0.1.1
+# devtools::install_github('thomasp85/ggforce')
+# devtools::install_github('thomasp85/ggraph')
+# install.packages("ggplot2")
+library(tidygraph)
+library(ggplot2)
 library(ggraph)
 set.seed(2020)
 
@@ -143,3 +148,4 @@ ggraph(bigram_graph, layout = "fr") +
   geom_edge_link() +
   geom_node_point() +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
