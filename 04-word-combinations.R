@@ -196,3 +196,67 @@ kjv_bigrams %>%
          !str_detect(word2, "\\d")) %>%
   visualize_bigrams()
 
+
+### 넓히기(widen), casting & 연산하기 & 다시 정돈(re-tidy), melt
+
+austen_section_words <- austen_books() %>%
+  filter(book == "Pride & Prejudice") %>%
+  mutate(section = row_number() %/% 10) %>%
+  filter(section > 0) %>%
+  unnest_tokens(word, text) %>% 
+  filter(!word %in% stop_words$word)
+
+austen_section_words
+
+# install.packages("widyr")
+library(widyr)
+
+# 각 절들 간에 동시 발생하는 단어를 세기
+# pairwise : word 변수의 각 단어 쌍에 대해 하나의 행을 생성한다는 뜻 
+
+word_pairs <- austen_section_words %>%
+  pairwise_count(word, section, sort = TRUE)
+
+word_pairs
+
+# 입력 : 문서(10개줄인 단원)로 구성된 쌍, 1개 단어마다 1행
+# 출력 : 단어 쌍마다 1행
+
+word_pairs %>% 
+  filter(item1 == "darcy") # "darcy"와 함께 자주 출현하는 단어
+
+
+### 쌍 단위 상관 검사
+# 파이 계수(phi confficient) : 단어들이 상대적으로 얼마나 자주 함께 나타는지 비교할 수 있는 지표 = pearson correlation
+
+word_cors <- austen_section_words %>%
+  group_by(word) %>%
+  filter(n() >= 20) %>%
+  pairwise_cor(word, section, sort = TRUE)
+
+word_cors
+
+word_cors %>%
+  filter(item1 == "pounds")
+
+word_cors %>%
+  filter(item1 %in% c("elizabeth", "pounds", "married", "pride")) %>%
+  group_by(item1) %>%
+  top_n(6) %>%
+  ungroup() %>%
+  mutate(item1 = reorder(item2, correlation)) %>%
+  ggplot(aes(item2, correlation)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ item1, scales = "free") +
+  coord_flip()
+
+set.seed(2020)
+
+word_cors %>%
+  filter(correlation > .15) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  theme_void()
