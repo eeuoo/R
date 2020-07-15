@@ -130,7 +130,7 @@ bigram_counts # 원래 카운트
 
 # 상대적으로 흔한 조합만을 선별하는 필터
 bigram_graph <- bigram_counts %>%
-  # filter(n > 20) %>%
+  filter(n > 20) %>%
   graph_from_data_frame()
 
 bigram_graph
@@ -148,4 +148,51 @@ ggraph(bigram_graph, layout = "fr") +
   geom_edge_link() +
   geom_node_point() +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+
+### 그 밖의 텍스트에 들어 있는 바이그램 시각화
+
+library(dplyr)
+library(tidyr)
+library(tidytext)
+library(ggplot2)
+library(igraph)
+library(ggraph)
+
+count_bigrams <- function(dataset) {
+  dataset %>% 
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    separate(bigram, c("word1", "word2"), sep = " ") %>%
+    filter(!word1 %in% stop_words$word,
+           !word2 %in% stop_words$word) %>%
+    count(word1, word2, sort = TRUE)
+ }
+
+visualize_bigrams <- function(bigrams) {
+  set.seed(2016)
+  a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+  
+  bigrams %>%
+    graph_from_data_frame() %>%
+    ggraph(layout = "fr") +
+    geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
+    geom_node_point(color = "lightblue", size = 5) +
+    geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+    theme_void()
+}
+
+library(gutenbergr)
+
+kjv <- gutenberg_download(10)
+
+library(stringr)
+
+kjv_bigrams <- kjv %>%
+  count_bigrams()
+
+kjv_bigrams %>%
+  filter(n > 40, 
+         !str_detect(word1, "\\d"),
+         !str_detect(word2, "\\d")) %>%
+  visualize_bigrams()
 
