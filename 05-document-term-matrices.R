@@ -13,9 +13,74 @@
 # cas_dfm() : quanteda에서 dfm 객체로 변환
 
 library(tm)
-# install.packages("topicmodels")
+# install.packages("topicmodels")  # brew install gsl
 library(topicmodels)
 
 data("AssociatedPress", package = "topicmodels")
 AssociatedPress
+
+terms <- Terms(AssociatedPress)
+head(terms)
+
+library(dplyr)
+library(tidytext)
+
+ap_td <- tidy(AssociatedPress)
+ap_td
+
+ap_sentiments <- ap_td %>%
+  inner_join(get_sentiments("bing"), by = c(term = "word"))
+
+ap_sentiments
+
+library(ggplot2)
+
+ap_sentiments %>%
+  count(sentiment, term, wt = count) %>%
+  ungroup() %>%
+  filter(n >= 200) %>%
+  mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+  mutate(term = reorder(term, n)) %>%
+  ggplot(aes(term, n, fill = sentiment)) +
+  geom_bar(stat = "identity") +
+  ylab("Contribution to sentiment") +
+  coord_flip()
+
+
+### dfm 객체 정돈하기
+# dfm : 문서-특징 행렬 (document-feature matrix)
+
+library(methods)
+install.packages("quanteda")
+
+data("data_corpus_inaugural", package = "quanteda")
+inaug_dfm <- quanteda::dfm(data_corpus_inaugural, verbose = FALSE)
+
+inaug_dfm
+
+inaug_td <- tidy(inaug_dfm)
+inaug_td
+
+inaug_tf_idf <- inaug_td %>% 
+  bind_tf_idf(term, document, count) %>%
+  arrange(desc(tf_idf))
+
+inaug_tf_idf
+
+speeches <- c("1933-Roosevelt", "1861-Lincoln",
+              "1961-Kennedy", "2009-Obama")
+
+inaug_tf_idf %>%
+  filter(document %in% speeches) %>%
+  group_by(document) %>% 
+  top_n(10, tf_idf) %>%
+  ungroup %>% 
+  mutate(term = reorder_within(term, tf_idf, document)) %>%
+  ggplot(aes(term, tf_idf, fill = document)) + 
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ document, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(x = "",
+       y = "tf-idf")
 
