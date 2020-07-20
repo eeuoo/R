@@ -140,5 +140,94 @@ acq_tokens %>%
 
 
 ### 사례 연구 : 금융 관련 기사 마이닝
+library(tm.plugin.webmining)
+library(purrr)
+
+company <- c("Microsoft", "Apple", "Google", "Amazon", "Facebook",
+             "Twitter", "IBM", "Yahoo", "Netflix")
+
+symbol <- c("MSFT", "AAPL", "GOOG", "AMZN", "FB", "TWTR", "IBM", "YHOO", "NFLX")
+
+download_articles <- function(symbol) {
+  WebCorpus(GoogleFinanceSource(paste0("NASDAQ:", symbol)))
+}
+
+stock_articles <- tibble(company = company,
+                         symbol = symbol) %>%
+  mutate(corpus = map(symbol, download_articles))
+
+load("data/stock_articles.rda")
+
+stock_articles
+
+stock_tokens <- stock_articles %>%
+  mutate(corpus = map(corpus, tidy)) %>%
+  unnest(cols = (corpus)) %>%
+  unnest_tokens(word, text) %>%
+  select(company, datetimestamp, word, id, heading)
+
+stock_tokens
+
+library(stringr)
+
+stock_tf_idf <- stock_tokens %>% 
+  count(company, word) %>%
+  filter(!str_detect(word, "\\d+")) %>%
+  bind_tf_idf(word, company, n) %>%
+  arrange(-tf_idf)
+
+stock_tf_idf %>%
+  group_by(company) %>%
+  top_n(8, tf_idf) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, tf_idf)) %>%
+  ggplot(aes(word, tf_idf, fill = company)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ company, scales = "free") +
+  coord_flip() +
+  labs(x = "Word",
+       y = "tf-idf")
+
+stock_tokens %>% 
+  anti_join(stop_words, by = "word") %>%
+  count(word, id, sort = TRUE) %>%
+  inner_join(get_sentiments("afinn"), by = "word") %>%
+  group_by(word) %>%
+  summarize(contribution = sum(n * value)) %>%
+  top_n(12, abs(contribution)) %>%
+  mutate(word = reorder(word, contribution)) %>%
+  ggplot(aes(word, contribution)) +
+  geom_col() + 
+  coord_flip() +
+  labs(y = "Frequency of word * AFINN value")
+
+load("data/afinn.rda")
+
+stock_tokens %>%
+  anti_join(stop_words, by = "word") %>%
+  count(word, id, sort = TRUE) %>%
+  inner_join(afinn, by = "word") %>%
+  group_by(word) %>%
+  summarize(contribution = sum(n * value)) %>%
+  top_n(12, abs(contribution)) %>%
+  mutate(word = reorder(word, contribution)) %>%
+  ggplot(aes(word, contribution)) +
+  geom_col() +
+  coord_flip() +
+  labs(y = "Frequency of word * AFINN value")
+  
+stock_tokens %>%
+  count(word) %>%
+  inner_join(get_sentiments("loughran"), by = "word") %>%
+  group_by(sentiment) %>%
+  top_n(5, n) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ sentiment, scales = "free") +
+  ylab("Frequency of this word in the recent financial articles")
+
 
 
