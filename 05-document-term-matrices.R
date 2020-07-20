@@ -84,3 +84,61 @@ inaug_tf_idf %>%
   labs(x = "",
        y = "tf-idf")
 
+
+### 정돈 텍스트 데이터를 행렬에 캐싕하기
+ap_td %>%
+  cast_dtm(document, term, count)
+
+ap_td %>%
+  cast_dfm(document, term, count)
+
+library(Matrix)
+
+# Matrix 객체로 캐스팅해 넣기
+m <- ap_td %>%
+  cast_sparse(document, term, count)
+
+class(m)
+
+dim(m)
+
+library(janeaustenr)
+
+austen_dtm <- austen_books() %>%
+  unnest_tokens(word, text) %>%
+  count(book, word) %>%
+  cast_dtm(book, word, n)
+
+austen_dtm
+
+
+### Corpus 객체를 메타데이터로 정돈하기
+data("acq")
+
+acq
+
+acq[[1]]
+
+acq_td <- tidy(acq)
+
+acq_td
+
+acq_tokens <- acq_td %>%
+  select(-places) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words, by = "word")
+
+# 가장 흔한 단어들
+acq_tokens %>%
+  count(word, sort = TRUE)
+
+# tf-idf
+acq_tokens %>% 
+  count(id, word) %>%
+  bind_tf_idf(word, id, n) %>%
+  arrange(desc(tf_idf))
+
+
+### 사례 연구 : 금융 관련 기사 마이닝
+
+
