@@ -22,6 +22,8 @@ AssociatedPress
 terms <- Terms(AssociatedPress)
 head(terms)
 
+# install.packages("dplyr")
+# install.packages("tidytext")
 library(dplyr)
 library(tidytext)
 
@@ -33,6 +35,7 @@ ap_sentiments <- ap_td %>%
 
 ap_sentiments
 
+# install.packages("ggplot2")
 library(ggplot2)
 
 ap_sentiments %>%
@@ -52,9 +55,9 @@ ap_sentiments %>%
 
 library(methods)
 library(stopwords)
-install.packages("stopwords")
-devtools::install_github("quanteda/stopwords")
-#install.packages("quanteda")
+library(quanteda)
+# install.packages("stopwords")
+# install.packages("quanteda")
 #devtools::install_github("quanteda/quanteda")  
 
 data("data_corpus_inaugural", package = "quanteda")
@@ -144,7 +147,9 @@ acq_tokens %>%
 
 
 ### 사례 연구 : 금융 관련 기사 마이닝
-library(tm.plugin.webmining)
+# install.packages("tm.plugin.webmining")
+# install_github("mannau/tm.plugin.webmining") # https://github.com/mannau/tm.plugin.webmining
+library(tm.plugin.webmining) 
 library(purrr)
 
 company <- c("Microsoft", "Apple", "Google", "Amazon", "Facebook",
