@@ -51,7 +51,11 @@ ap_sentiments %>%
 # dfm : 문서-특징 행렬 (document-feature matrix)
 
 library(methods)
-install.packages("quanteda")
+library(stopwords)
+install.packages("stopwords")
+devtools::install_github("quanteda/stopwords")
+#install.packages("quanteda")
+#devtools::install_github("quanteda/quanteda")  
 
 data("data_corpus_inaugural", package = "quanteda")
 inaug_dfm <- quanteda::dfm(data_corpus_inaugural, verbose = FALSE)
