@@ -1,0 +1,41 @@
+
+install.packages("lubridate")
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+tweets_julia <- read_csv("~/workspace/R/tweets_julia.csv")        
+tweets_dave <- read_csv("~/workspace/R/tweets_dave.csv")
+
+tweets <- bind_rows(tweets_julia %>% 
+                      mutate(person = "Julia"),
+                    tweets_dave %>% 
+                      mutate(person = "David")) %>%
+  mutate(timestamp = ymd_hms(timestamp))
+
+ggplot(tweets, aes(x = timestamp, fill = person)) +
+  geom_histogram(position = "identity", bins = 20, show.legend = FALSE) +
+  facet_wrap(~person, ncol = 1)
+
+
+library(tidytext)
+library(stringr)
+
+remove_reg <- "&amp;|&lt;|&gt;"
+
+tidy_tweets <- tweets %>%
+  filter(!str_detect(text, "^RT")) %>%
+  mutate(text = str_remove_all(text, remove_reg)) %>%
+  unnest_tokens(word, text, token = "tweets") %>%
+  filter(!word %in% stop_words$word,
+         !word %in% str_remove_all(stop_words$word, "'"),
+         str_detect(word, "[a-z]"))
+
+frequency <- tidy_tweets %>%
+  group_by(person) %>%
+  count(word, sort = TRUE) %>%
+  left_join(tidy_tweets %>% 
+              group_by(person) %>%
+              summarise(total = n())) %>%
+  mutate(freq = n/total)
