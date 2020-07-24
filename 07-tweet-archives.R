@@ -39,3 +39,23 @@ frequency <- tidy_tweets %>%
               group_by(person) %>%
               summarise(total = n())) %>%
   mutate(freq = n/total)
+
+frequency
+
+library(tidyr)
+
+freeny <- frequency %>%
+  select(person, word, freq) %>%
+  spread(person, freq) %>%
+  arrange(Julia, David)
+
+frequency 
+
+library(scales)
+
+ggplot(frequency, aes(Julia, David)) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.25, height = 0.25) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  geom_abline(color = "red")
