@@ -143,3 +143,31 @@ words_by_time %>%
   geom_line(size = 1.3) +
   labs(x = NULL, y = "Word frequency")
 
+
+
+tweets_julia <- read_csv("~/workspace/R/tweets_julia.csv")
+tweets_dave <- read_csv("~/workspace/R/drob_tweets.csv")
+tweets <- bind_rows(tweets_julia %>% 
+                      mutate(person = "Julia"),
+                    tweets_dave %>% 
+                      mutate(person = "David")) %>%
+  mutate(created_at = ymd_hms(created_at))
+
+
+tidy_tweets <- tweets %>% 
+  filter(!str_detect(text, "^(RT|@)")) %>%
+  mutate(text = str_remove_all(text, remove_reg)) %>%
+  unnest_tokens(word, text, token = "tweets", strip_url = TRUE) %>%
+  filter(!word %in% stop_words$word,
+         !word %in% str_remove_all(stop_words$word, "'"))
+
+tidy_tweets
+
+
+totals <- tidy_tweets %>% 
+  group_by(person, id) %>% 
+  summarise(rts = first(retweets)) %>% 
+  group_by(person) %>% 
+  summarise(total_rts = sum(rts))
+
+totals
