@@ -171,3 +171,63 @@ totals <- tidy_tweets %>%
   summarise(total_rts = sum(rts))
 
 totals
+
+word_by_rts <- tidy_tweets %>% 
+  group_by(id, word, person) %>% 
+  summarise(rts = first(retweets)) %>% 
+  group_by(person, word) %>% 
+  summarise(retweets = median(rts), uses = n()) %>%
+  left_join(totals) %>%
+  filter(retweets != 0) %>%
+  ungroup()
+
+word_by_rts %>% 
+  filter(uses >= 5) %>%
+  arrange(desc(retweets))
+
+word_by_rts %>%
+  filter(uses >= 5) %>%
+  group_by(person) %>%
+  top_n(10, retweets) %>%
+  arrange(retweets) %>%
+  ungroup() %>%
+  mutate(word = factor(word, unique(word))) %>%
+  ungroup() %>%
+  ggplot(aes(word, retweets, fill = person)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ person, scales = "free", ncol = 2) +
+  coord_flip() +
+  labs(x = NULL, 
+       y = "Median # of retweets for tweets containing each word")
+
+
+totals <- tidy_tweets %>% 
+  group_by(person, id) %>% 
+  summarise(favs = first(favorites)) %>% 
+  group_by(person) %>% 
+  summarise(total_favs = sum(favs))
+
+
+word_by_favs <- tidy_tweets %>% 
+  group_by(id, word, person) %>% 
+  summarise(favs = first(favorites)) %>% 
+  group_by(person, word) %>% 
+  summarise(favorites = median(favs), uses = n()) %>%
+  left_join(totals) %>%
+  filter(favorites != 0) %>%
+  ungroup()
+
+word_by_favs %>%
+  filter(uses >= 5) %>%
+  group_by(person) %>%
+  top_n(10, favorites) %>%
+  arrange(favorites) %>%
+  ungroup() %>%
+  mutate(word = factor(word, unique(word))) %>%
+  ungroup() %>%
+  ggplot(aes(word, favorites, fill = person)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ person, scales = "free", ncol = 2) +
+  coord_flip() +
+  labs(x = NULL, 
+       y = "Median # of favorites for tweets containing each word")
