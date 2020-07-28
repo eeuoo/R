@@ -117,3 +117,42 @@ desc_word_pairs %>%
   geom_node_text(aes(label = name), repel = TRUE,
                  point.padding = unit(0.2, "lines")) +
   theme_void()
+
+
+### 중요어 연결망 
+keyword_pairs <- nasa_keyword %>% 
+  pairwise_count(keyword, id, sort = TRUE, upper = FALSE)
+
+keyword_pairs
+
+set.seed(1234)
+
+keyword_pairs %>%
+  filter(n >= 700) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour = "royalblue") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE,
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
+
+# 상관(correlation)
+keyword_cors <- nasa_keyword %>% 
+  group_by(keyword) %>%
+  filter(n() >= 50) %>%
+  pairwise_cor(keyword, id, sort = TRUE, upper = FALSE)
+
+keyword_cors
+
+set.seed(1234)
+
+keyword_cors %>%
+  filter(correlation > .6) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = correlation, edge_width = correlation), edge_colour = "royalblue") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE,
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
