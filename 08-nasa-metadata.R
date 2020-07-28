@@ -75,3 +75,45 @@ nasa_keyword <- nasa_keyword %>%
 
 
 ### 단어 동시 발생과 상관
+# install.packages("widyr")
+library(widyr)
+
+title_word_pairs <- nasa_title %>%
+  pairwise_count(word, id, sort = TRUE, upper = FALSE)
+
+title_word_pairs
+
+desc_word_pairs <- nasa_desc %>% 
+  pairwise_count(word, id, sort = TRUE, upper = FALSE)
+
+desc_word_pairs
+
+library(ggplot2)
+# install.packages("igraph")
+library(igraph)
+installed.packages("ggraph")
+library(ggraph)
+
+set.seed(1234)
+
+title_word_pairs %>%
+  filter(n >= 250) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour = "cyan4") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE, 
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
+
+set.seed(1234)
+
+desc_word_pairs %>%
+  filter(n >= 5000) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour = "darkred") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE,
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
