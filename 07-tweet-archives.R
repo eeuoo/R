@@ -1,5 +1,6 @@
+# 사례 연구 : 트위터 아카이브 비교
 
-install.packages("lubridate")
+# install.packages("lubridate")
 library(lubridate)
 library(ggplot2)
 library(dplyr)
@@ -19,8 +20,14 @@ ggplot(tweets, aes(x = timestamp, fill = person)) +
   facet_wrap(~person, ncol = 1)
 
 
+### 단어 빈도
+
 library(tidytext)
 library(stringr)
+
+replace_reg1 <- "http://t.co/[A-Za-z\\d]+|"
+replace_reg2 <- "http://[A-Za-z\\d]+|&amp;|&lt;|&gt|RT|https"
+replace_reg <- paste0(replace_reg1, replace_reg2)
 
 remove_reg <- "&amp;|&lt;|&gt;"
 
@@ -44,7 +51,7 @@ frequency
 
 library(tidyr)
 
-freeny <- frequency %>%
+frequency <- frequency %>%
   select(person, word, freq) %>%
   spread(person, freq) %>%
   arrange(Julia, David)
@@ -60,6 +67,9 @@ ggplot(frequency, aes(Julia, David)) +
   scale_y_log10(labels = percent_format()) +
   geom_abline(color = "red")
 
+
+### 단어 용도 비교 
+# 로그 오즈비(log odds ratio, 로그 승산비)
 
 tidy_tweets <- tidy_tweets %>% 
   filter(timestamp >= as.Date("2016-01-01"),
@@ -90,6 +100,8 @@ word_ratios %>%
   ylab("log odds ratio (David/Julia)") +
   scale_fill_discrete(name = "", labels = c("David", "Julia"))
 
+
+### 단어 사용 변화
 
 words_by_time <- tidy_tweets %>%
   filter(!str_detect(word, "^@")) %>%
@@ -144,6 +156,7 @@ words_by_time %>%
   labs(x = NULL, y = "Word frequency")
 
 
+### 즐겨찾기 및 트윗
 
 tweets_julia <- read_csv("~/workspace/R/tweets_julia.csv")
 tweets_dave <- read_csv("~/workspace/R/drob_tweets.csv")
