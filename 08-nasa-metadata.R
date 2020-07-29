@@ -156,3 +156,54 @@ keyword_cors %>%
   geom_node_text(aes(label = name), repel = TRUE,
                  point.padding = unit(0.2, "lines")) +
   theme_void()
+
+
+### 설명 필드에 대한 tf-idf 계산
+# 여기서 설명 필드 = 문서 = 말뭉치
+
+desc_tf_idf <- nasa_desc %>%
+  count(id, word, sort = TRUE) %>%
+  ungroup() %>%
+  bind_tf_idf(word, id, n)
+
+desc_tf_idf %>%
+  arrange(-tf_idf) %>%
+  select(-id)
+
+desc_tf_idf <- full_join(desc_tf_idf, nasa_keyword, by = "id")
+
+desc_tf_idf %>%
+  filter(!near(tf, 1)) %>%
+  filter(keyword %in% c("SOLAR ACTIVITY", "CLOUDS", 
+                        "SEISMOLOGY", "ASTROPHYSICS",
+                        "HUMAN HEALTH", "BUDGET")) %>%
+  arrange(desc(tf_idf)) %>%
+  group_by(keyword) %>%
+  distinct(word, keyword, .keep_all = TRUE) %>%
+  top_n(15, tf_idf) %>%
+  ungroup() %>%
+  mutate(word = factor(word, levels = rev(unique(word)))) %>%
+  ggplot(aes(word, tf_idf, fill = keyword)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~keyword, ncol = 3, scales = "free") +
+  coord_flip() + 
+  labs(title = "Highest tf-idf words in NASA metadata description fields",
+       caption = "NASA metadata from https://data.nasa.gov/data.json",
+       x = NULL, y = "tf-idf")
+
+
+### 토픽 모델링
+my_stop_words <- bind_rows(stop_words, 
+                           tibble(word = c("nbsp", "amp", "gt", "lt",
+                                           "timesnewromanpsmt", "font",
+                                           "td", "li", "br", "tr", "quot",
+                                           "st", "img", "src", "strong",
+                                           "http", "file", "files",
+                                           as.character(1:12)), 
+                                  lexicon = rep("custom", 30)))
+
+word_counts <- nasa_desc %>%
+  anti_join(my_stop_words) %>%
+  count(id, word, sort = TRUE) %>%
+  ungroup()
+
