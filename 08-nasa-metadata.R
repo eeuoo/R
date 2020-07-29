@@ -193,6 +193,9 @@ desc_tf_idf %>%
 
 
 ### 토픽 모델링
+# 잠재 디리클레 할당 (LDA, Latent Dririchlet allocation)
+
+# 문서-용어 행렬에 캐스팅
 my_stop_words <- bind_rows(stop_words, 
                            tibble(word = c("nbsp", "amp", "gt", "lt",
                                            "timesnewromanpsmt", "font",
@@ -206,4 +209,84 @@ word_counts <- nasa_desc %>%
   anti_join(my_stop_words) %>%
   count(id, word, sort = TRUE) %>%
   ungroup()
+
+desc_dtm <- word_counts %>%
+  cast_dtm(id, word, n)
+
+desc_dtm
+
+# 토픽 모델링 준비
+library(topicmodels)
+
+desc_lda <- LDA(desc_dtm, k = 24, control = list(seed = 1234))
+
+desc_lda
+
+# 토픽 모델 해석 
+tidy_lda <- tidy(desc_lda)
+
+tidy_lda
+
+top_terms <- tidy_lda %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+top_terms
+
+top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  group_by(topic, term) %>%    
+  arrange(desc(beta)) %>%  
+  ungroup() %>%
+  ggplot(aes(term, beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(title = "Top 10 terms in each LDA topic",
+       x = NULL, y = expression(beta)) +
+  facet_wrap(~ topic, ncol = 4, scales = "free")
+
+lda_gamma <- tidy(desc_lda, matrix = "gamma")
+
+lda_gamma
+
+ggplot(lda_gamma, aes(gamma)) +
+  geom_histogram() +
+  scale_y_log10() +
+  labs(title = "Distribution of probabilities for all topics",
+       y = "Number of documents", x = expression(gamma))
+
+ggplot(lda_gamma, aes(gamma, fill = as.factor(topic))) +
+  geom_histogram(show.legend = FALSE) +
+  facet_wrap(~ topic, ncol = 4) +
+  scale_y_log10() +
+  labs(title = "Distribution of probability for each topic",
+       y = "Number of documents", x = expression(gamma))
+
+# 토픽 모델링을 중요어와 연결하기
+lda_gamma <- full_join(lda_gamma, nasa_keyword, by = c("document" = "id"))
+
+lda_gamma
+
+top_keywords <- lda_gamma %>% 
+  filter(gamma > 0.9) %>% 
+  count(topic, keyword, sort = TRUE)
+
+top_keywords
+
+top_keywords %>%
+  group_by(topic) %>%
+  top_n(5, n) %>%
+  ungroup %>%
+  mutate(keyword = reorder_within(keyword, n, topic)) %>%
+  ggplot(aes(keyword, n, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Top keywords for each LDA topic",
+       x = NULL, y = "Number of documents") +
+  coord_flip() +
+  scale_x_reordered() +
+  facet_wrap(~ topic, ncol = 4, scales = "free")
+
 
